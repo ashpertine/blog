@@ -11,6 +11,7 @@ export async function handleUserRegister(req: Request, res: Response) {
   if(errObj) return errorRes(errObj.error, { details: errObj.details }, res);
 
   const { username, password, confirmPassword } = matchedData(req) as { username: string, password: string, confirmPassword: string };
+  
   if(password !== confirmPassword) return errorRes(AppError.badRequest("Your inputs are invalid"), { details: "Your passwords do not match!"}, res);
 
   const user = await createNewUser(username, password);
