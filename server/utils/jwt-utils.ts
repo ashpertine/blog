@@ -5,8 +5,7 @@ export type userPayload = {
   sub: number,
 }
 
-
-function generateToken(payload: userPayload) {
+export function generateToken(payload: userPayload) {
   const secretKey: string = env.jwtSecretKey;
   const options = {
     expiresIn: '3d'

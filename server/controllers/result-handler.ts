@@ -8,7 +8,7 @@ type responseData = {
 }
 
 function buildResponseData(success: boolean, message: string | string[] | null, additionalData: Record<string, unknown> | null): responseData {
-  if(!additionalData) {
+  if (!additionalData) {
     return {
       success,
       message: message === null ? '' : message
@@ -18,18 +18,19 @@ function buildResponseData(success: boolean, message: string | string[] | null, 
   return {
     success,
     message: message === null ? '' : message,
-    additionalData
+    ...additionalData
   }
 }
 
 export function errorRes(error: Error, additionalData: Record<string, unknown> | null, res: Response) {
-  if(error instanceof AppError) {
+  if (error instanceof AppError) {
+    console.log(error);
     return res.status(error.statusCode).json(buildResponseData(false, error.message, additionalData))
   }
   return res.status(500).json(buildResponseData(false, error.message, additionalData))
 }
 
-export function okRes(customCode: number | null, message: string | string[] | null, additionalData: Record<string, unknown> , res: Response) {
+export function okRes(customCode: number | null, message: string | string[] | null, additionalData: Record<string, unknown>, res: Response) {
   const statusCode = customCode ?? 200;
   return res.status(statusCode).json(buildResponseData(true, message, additionalData));
 }

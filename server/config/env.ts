@@ -1,12 +1,12 @@
 import "dotenv/config"
 
 function required(env_variable: string) {
-  const envKey = process.env[env_variable];
-  if(envKey === undefined) {
-    throw new Error(`Missing .env value: ${env_variable}`)
+  const envValue = process.env[env_variable];
+  if (envValue === undefined) {
+    throw new Error(`Missing .env value: ${env_variable}`);
   }
 
-  return env_variable
+  return envValue;
 }
 
 export const env = {

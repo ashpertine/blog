@@ -1,21 +1,22 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 import { prisma } from "../lib/prisma.ts";
-import { genPasswordHash, validPasswordHash} from "../utils/password-utils.ts";
+import { genPasswordHash, validPasswordHash } from "../utils/password-utils.ts";
 import { AppError } from "../utils/errors.ts";
+import { User } from "../generated/prisma/client.ts";
 
 export async function createNewUser(username: string, password: string) {
   try {
-   const hashedPassword = await genPasswordHash(password);
-   const newUser = await prisma.user.create({
+    const hashedPassword = await genPasswordHash(password);
+    const newUser = await prisma.user.create({
       data: {
         username: username,
         password: hashedPassword
       }
     })
 
-  return newUser;
-  } catch(error) {
-    if(error instanceof PrismaClientKnownRequestError && error.code === "P2002") {
+    return newUser;
+  } catch (error) {
+    if (error instanceof PrismaClientKnownRequestError && error.code === "P2002") {
       throw AppError.conflict("There is already an existing user with this username!")
     }
 
@@ -23,21 +24,27 @@ export async function createNewUser(username: string, password: string) {
   }
 }
 
-export async function compareUserCredentials(user_id: number, password: string) {
+export async function verifyAndGetUser(username: string, password: string): Promise<User> {
   try {
     const user = await prisma.user.findUnique({
       where: {
-        id: user_id
+        username: username
       }
     })
 
-    if(!user) return false;
+    if (!user) throw AppError.badRequest("Incorrect username/password.");
+
     const match = await validPasswordHash(password, user.password);
 
-    if(!match) return false
-    
-    return true;
-  } catch(error) {
-    throw AppError.internalError((error as Error).message);
+    if (!match) throw AppError.badRequest("Incorrect username/password.");
+
+    return user;
+
+  } catch (error) {
+    if (!(error instanceof AppError)) {
+      throw AppError.internalError((error as Error).message);
+    }
+
+    throw error;
   }
 }

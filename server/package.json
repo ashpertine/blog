@@ -43,5 +43,9 @@
     "@types/passport": "^1.0.17",
     "@types/passport-jwt": "^4.0.1",
     "prisma": "^7.9.1"
+  },
+  "allowScripts": {
+    "@prisma/engines@7.9.1": true,
+    "prisma@7.9.1": true
   }
 }

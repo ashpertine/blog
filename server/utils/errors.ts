@@ -28,7 +28,7 @@ class AppError extends Error {
     }
   }
 
-    static notFound(message: string) {
+  static notFound(message: string) {
     return new AppError("Not Found", message);
   }
 

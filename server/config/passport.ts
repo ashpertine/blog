@@ -1,4 +1,4 @@
-import { Strategy as JwtStrategy } from "passport-jwt";
+import { Strategy as JwtStrategy, StrategyOptionsWithoutRequest } from "passport-jwt";
 import { ExtractJwt } from "passport-jwt";
 import { env } from "./env.ts";
 import passport from "passport";
@@ -8,26 +8,26 @@ import { type userPayload } from "../utils/jwt-utils.ts";
 const options = {
   jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
   secretOrKey: env.jwtSecretKey
-}
+} as StrategyOptionsWithoutRequest
 
 passport.use(new JwtStrategy(options, async (jwt_payload: userPayload, done) => {
   try {
     const userId = jwt_payload.sub;
     const user = await prisma.user.findUnique({
-      where: { 
+      where: {
         id: userId
       }
     })
-    if(!user) {
+    if (!user) {
       return done(null, false)
     }
 
     done(null, user);
-  } catch(error) {
+  } catch (error) {
     done(error, false);
   }
 }))
 
-export { 
+export {
   passport
 }
