@@ -1,6 +1,7 @@
 import express from "express";
 import { passport } from "./config/passport.ts";
 import { authRouter } from "./router/auth.router";
+import { postRouter } from "./router/post.router.ts";
 import { AppError } from "./utils/errors";
 import { errorFallback } from "./middleware/error-fallback.ts";
 
@@ -15,6 +16,7 @@ app.set('trust proxy', 1);
 app.use(passport.initialize());
 
 app.use('/api', authRouter);
+app.use('/api', postRouter);
 app.use('/{*splat}', (req, res, next) => {
   next(AppError.notFound("No resource on this route."));
 })
