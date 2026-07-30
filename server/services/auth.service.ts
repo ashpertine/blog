@@ -20,31 +20,22 @@ export async function createNewUser(username: string, password: string) {
       throw AppError.conflict("There is already an existing user with this username!")
     }
 
-    throw AppError.internalError((error as Error).message);
+    throw error;
   }
 }
 
 export async function verifyAndGetUser(username: string, password: string): Promise<User> {
-  try {
-    const user = await prisma.user.findUnique({
-      where: {
-        username: username
-      }
-    })
-
-    if (!user) throw AppError.badRequest("Incorrect username/password.");
-
-    const match = await validPasswordHash(password, user.password);
-
-    if (!match) throw AppError.badRequest("Incorrect username/password.");
-
-    return user;
-
-  } catch (error) {
-    if (!(error instanceof AppError)) {
-      throw AppError.internalError((error as Error).message);
+  const user = await prisma.user.findUnique({
+    where: {
+      username: username
     }
+  })
 
-    throw error;
-  }
+  if (!user) throw AppError.badRequest("Incorrect username/password.");
+
+  const match = await validPasswordHash(password, user.password);
+
+  if (!match) throw AppError.badRequest("Incorrect username/password.");
+
+  return user;
 }

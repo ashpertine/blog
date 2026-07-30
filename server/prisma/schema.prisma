@@ -32,8 +32,8 @@ model Post {
   title String @db.VarChar(255)
   content String
   is_public Boolean @default(false)
-  is_draft Boolean @default(true)
   published_date DateTime?
+  last_updated_date DateTime?
   
   post_user User? @relation(fields: [user_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
   post_comments Comment[]
