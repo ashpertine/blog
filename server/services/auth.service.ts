@@ -39,3 +39,15 @@ export async function verifyAndGetUser(username: string, password: string): Prom
 
   return user;
 }
+
+export async function getProfile(userId: number) {
+  const user = await prisma.user.findFirst({
+    where: {
+      id: userId
+    }
+  })
+
+  if(!user) throw AppError.notFound("User not found")
+
+  return user;
+}
