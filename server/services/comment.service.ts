@@ -1,0 +1,92 @@
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
+import { prisma } from "../lib/prisma.ts";
+import { AppError } from "../utils/errors.ts";
+import { UserModel } from "../models/user.ts";
+import { getPost } from "./post.service.ts";
+
+export async function getCommentsByPost(userId: number | null, postId: number) {
+  const post = await getPost(userId, postId);
+
+  const comments = await prisma.comment.findMany({
+    where: {
+      post_id: post.id
+    }
+  })
+
+  return comments
+}
+
+export async function getComment(commentId: number) {
+  const comment = await prisma.comment.findFirst({
+    where: {
+      id: commentId
+    }
+  })
+
+  if (!comment) throw AppError.notFound("Comment not found!");
+
+  const post = await prisma.post.findFirst({
+    where: {
+      id: comment.post_id
+    }
+  })
+
+  if (!post || !post.is_public) throw AppError.notFound("Comment not found!");
+  return comment;
+}
+
+export async function createComment(userId: number, postId: number, parentCommentId: number | null, content: string) {
+  await getPost(userId, postId);
+
+  const comment = await prisma.comment.create({
+    data: {
+      user_id: userId,
+      content: content,
+      post_id: postId,
+      parent_comment_id: parentCommentId,
+    }
+  });
+
+  return comment;
+}
+
+export async function modifyComment(userId: number, commentId: number, content: string) {
+  try {
+    const modifiedComment = await prisma.comment.update({
+      data: {
+        content: content
+      },
+      where: {
+        id: commentId,
+        user_id: userId
+      }
+    })
+
+    return modifiedComment;
+  } catch (error) {
+    if (error instanceof PrismaClientKnownRequestError && error.code == "P2025") {
+      throw AppError.notFound("Comment not be found!")
+    }
+
+    throw error;
+  }
+}
+
+export async function deleteComment(userId: number, commentId: number) {
+  try {
+    const comment = await prisma.comment.delete({
+      where: {
+        id: commentId,
+        user_id: userId
+      }
+    });
+
+    return comment;
+  } catch (error) {
+    if (error instanceof PrismaClientKnownRequestError && error.code == "P2025") {
+      throw AppError.notFound("Comment not be found!")
+    }
+
+    throw error;
+  }
+}

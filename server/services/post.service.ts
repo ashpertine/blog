@@ -60,7 +60,7 @@ export async function getPost(userId: number | null, postId: number) {
   });
 
   if (!post) throw AppError.notFound("Post not found!");
-  if(!post.is_public && post.user_id !== userId) {
+  if (!post.is_public && post.user_id !== userId) {
     throw AppError.notFound("Post not found!");
   }
 

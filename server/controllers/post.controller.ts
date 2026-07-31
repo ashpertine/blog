@@ -5,7 +5,7 @@ import { AppError } from "../utils/errors.ts";
 import { generateToken } from "../utils/jwt-utils.ts";
 import * as PostService from "../services/post.service.ts";
 
-function getParamResourceId(req: Request, name: string) {
+export function getParamResourceId(req: Request, name: string) {
   const resourceId = req.params[name];
   if (!resourceId) throw AppError.badRequest(`${name} is not defined`);
 
@@ -40,7 +40,7 @@ export async function handlePostUpdate(req: Request, res: Response) {
   const userId = req.user!.id;
   const postId = getParamResourceId(req, "postId");
   const { title, content } = req.body as { title: string | undefined, content: string | undefined };
-  if(!title || !content) return errorRes(AppError.badRequest("content and/or title not defined!"), null, res);
+  if (!title || !content) return errorRes(AppError.badRequest("content and/or title not defined!"), null, res);
 
   const modifiedPost = await PostService.modifyPost(userId, postId, title, content);
 

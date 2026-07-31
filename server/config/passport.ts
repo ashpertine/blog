@@ -30,16 +30,21 @@ passport.use(new JwtStrategy(options, async (jwt_payload: userPayload, done) => 
   }
 }))
 
-const optionalUserAuth = async(req: Request, res: Response, next: NextFunction) => {
-  passport.authenticate('jwt', { session: false} , (error: Error, user: User | null) => {
-    if(error) return next(error);
-    
+const optionalUserAuth = (req: Request, res: Response, next: NextFunction) => {
+  passport.authenticate('jwt', { session: false }, (error: Error, user: User | null) => {
+    if (error) return next(error);
+
     req.user = user ?? undefined;
     next();
   })(req, res, next);
 }
 
+const mandatoryUserAuth = (req: Request, res: Response, next: NextFunction) => {
+  passport.authenticate('jwt', { session: false })(req, res, next);
+}
+
 export {
   passport,
-  optionalUserAuth
+  optionalUserAuth,
+  mandatoryUserAuth
 }
