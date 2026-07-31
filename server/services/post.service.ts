@@ -52,14 +52,17 @@ export async function getAllPublicPosts(limit: number | null) {
   return posts;
 }
 
-export async function getPost(postId: number) {
+export async function getPost(userId: number | null, postId: number) {
   const post = await prisma.post.findFirst({
     where: {
       id: postId
     }
-  })
+  });
 
-  if (!post || !post.is_public) throw AppError.notFound("Post not found!");
+  if (!post) throw AppError.notFound("Post not found!");
+  if(!post.is_public && post.user_id !== userId) {
+    throw AppError.notFound("Post not found!");
+  }
 
   return post;
 }

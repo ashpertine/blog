@@ -19,15 +19,18 @@ export async function getAllPosts(req: Request, res: Response) {
 }
 
 export async function getPost(req: Request, res: Response) {
+  const userId = req.user ? req.user.id : null;
   const postId = getParamResourceId(req, "postId")
-  const post = await PostService.getPost(Number(postId));
+  const post = await PostService.getPost(userId, Number(postId));
 
   return okRes(null, `Successfully fetched post ${postId}.`, { post: post }, res);
 }
 
 export async function handlePostCreation(req: Request, res: Response) {
   const userId = req.user!.id;
-  const { title, content } = req.body as { title: string, content: string };
+  const { title: rawTitle, content: rawContent } = req.body as { title: string | undefined, content: string | undefined };
+  const title = rawTitle ? rawTitle : null;
+  const content = rawContent ? rawContent : null;
   const newPost = await PostService.createPost(userId, title, content);
 
   return okRes(null, `Successfully created post.`, { post: newPost }, res);
@@ -36,7 +39,9 @@ export async function handlePostCreation(req: Request, res: Response) {
 export async function handlePostUpdate(req: Request, res: Response) {
   const userId = req.user!.id;
   const postId = getParamResourceId(req, "postId");
-  const { title, content } = req.body as { title: string, content: string };
+  const { title, content } = req.body as { title: string | undefined, content: string | undefined };
+  if(!title || !content) return errorRes(AppError.badRequest("content and/or title not defined!"), null, res);
+
   const modifiedPost = await PostService.modifyPost(userId, postId, title, content);
 
   return okRes(null, `Successfully modified post ${postId}`, { post: modifiedPost }, res);

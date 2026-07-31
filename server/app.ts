@@ -15,6 +15,13 @@ app.set('trust proxy', 1);
 // Passport Auth
 app.use(passport.initialize());
 
+app.use('/api', (req, res, next) => {
+  const httpMethodAllow = ["get", "delete"]
+  if(!req.body && !httpMethodAllow.includes(req.method.toLowerCase())) {
+    next(AppError.badRequest("Request body is not defined. (JSON)"))
+  }
+  next();
+})
 app.use('/api', authRouter);
 app.use('/api', postRouter);
 app.use('/{*splat}', (req, res, next) => {
