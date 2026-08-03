@@ -10,6 +10,7 @@ const pool = new Pool({ connectionString });
 const adapter = new PrismaPg(pool);
 const prisma = new PrismaClient({ adapter });
 async function main() {
+  if(env.initAdminPass.trim().length < 8) throw Error("Admin password length is too low. (min 8 characters)")
   const adminPassword = await genPasswordHash(env.initAdminPass);
   const adminRolesJson = ["commenter", "admin", "author"] as Prisma.JsonArray;
   const admin = await prisma.user.upsert({

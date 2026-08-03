@@ -8,6 +8,7 @@ const authRouter = Router();
 authRouter.post('/register', registerValidator, handleValidationErrors, AuthController.handleUserRegister);
 authRouter.post('/login', loginValidator, handleValidationErrors, AuthController.handleUserLogin);
 authRouter.get('/profile', mandatoryUserAuth, AuthController.getUserProfile);
-authRouter.get('/permissions', mandatoryUserAuth, AuthController.getUserPermissions);
+authRouter.patch('/profile/:userId/permissions', mandatoryUserAuth, AuthController.setUserPermissions);
+authRouter.get('/profile/permissions', mandatoryUserAuth, AuthController.getUserPermissions);
 
 export { authRouter }

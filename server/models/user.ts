@@ -7,9 +7,11 @@ import { Prisma } from "../generated/prisma/client";
 export class UserModel {
   obj: User;
   permissions: string[];
+  roles: string[];
   constructor(user: User) {
     this.obj = user;
     this.permissions = this.getPermissions();
+    this.roles = this.obj.roles as string[];
   }
 
   static async initUser(userId: number) {

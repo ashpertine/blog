@@ -27,6 +27,9 @@ export function errorRes(error: Error, additionalData: Record<string, unknown> |
     console.log(error);
     return res.status(error.statusCode).json(buildResponseData(false, error.message, additionalData))
   }
+  if(error instanceof SyntaxError) {
+    return res.status(400).json(buildResponseData(false, error.message, additionalData))
+  }
   return res.status(500).json(buildResponseData(false, error.message, additionalData))
 }
 

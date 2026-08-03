@@ -1,4 +1,5 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
+import { Prisma } from "../generated/prisma/client.ts";
 import { prisma } from "../lib/prisma.ts";
 import { genPasswordHash, validPasswordHash } from "../utils/password-utils.ts";
 import { AppError } from "../utils/errors.ts";
@@ -59,6 +60,29 @@ export async function getPermissions(userId: number) {
   return userModel.getPermissions();
 }
 
-export async function setPermissions(userId: number, role: string ) {
-  if(!userRoles.includes(role)) throw AppError.badRequest("Invalid role given.");
+export async function setPermissions(fromUserId: number, targetUserId: number, roles: string[], password: string | null) {
+  const userModel = await UserModel.initUser(fromUserId);
+  if(!userModel.hasPermission("modifyRoles")) throw AppError.forbidden("You do not have permission to modify roles.");
+  
+  for(const role of roles) {
+    if(!userRoles.includes(role)) throw AppError.badRequest("Invalid role given.");
+  }
+
+  if(fromUserId === targetUserId && !roles.includes("admin") && userModel.roles.includes("admin")) {
+    if(password === null) throw AppError.forbidden("You cannot remove your admin privileges without your password.");
+    
+    const match = await validPasswordHash(password, userModel.obj.password);
+    if(!match) throw AppError.badRequest("Password for removing admin privileges is incorrect."); 
+  }
+
+  const modifiedUser = await prisma.user.update({
+    data: {
+      roles: roles as Prisma.JsonArray
+    },
+    where: {
+      id: targetUserId
+    }
+  })
+
+  return modifiedUser;
 }

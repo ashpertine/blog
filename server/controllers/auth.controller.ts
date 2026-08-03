@@ -2,8 +2,9 @@ import { type Response, type Request, type NextFunction } from "express";
 import { matchedData, } from "express-validator";
 import { okRes, errorRes } from "./result-handler.ts";
 import { AppError } from "../utils/errors.ts";
-import { createNewUser, verifyAndGetUser, getProfile, getPermissions } from "../services/auth.service.ts";
+import { createNewUser, verifyAndGetUser, getProfile, getPermissions, setPermissions } from "../services/auth.service.ts";
 import { generateToken } from "../utils/jwt-utils.ts";
+import { getParamResourceId } from "./post.controller.ts";
 
 
 export async function handleUserRegister(req: Request, res: Response) {
@@ -39,4 +40,20 @@ export async function getUserPermissions(req: Request, res: Response) {
   const perms = await getPermissions(userId);
 
   return okRes(null, null, {permissions: perms }, res);
+}
+
+export async function setUserPermissions(req: Request, res: Response) {
+  const fromUserId = req.user!.id;
+  const targetUserId = getParamResourceId(req, "userId");
+  const roles = req.body.roles as string[] | undefined;
+
+  if (!Array.isArray(roles) || roles.length === 0 || !roles.every((r) => typeof r === "string")) {
+    throw AppError.badRequest("Roles (roles) must be a non-empty array of strings.");
+  }
+  
+  const password = req.body.password ? String(req.body.password) : null;
+  if(!roles) throw AppError.badRequest("Roles (roles) array needs to be defined.");
+
+  const modifiedUser = await setPermissions(fromUserId, targetUserId, roles, password);
+  return okRes(null, null, {user: modifiedUser}, res);
 }
