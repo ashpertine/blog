@@ -2,13 +2,14 @@ import { User } from "../generated/prisma/client";
 import { prisma } from "../lib/prisma.ts";
 import { AppError } from "../utils/errors.ts";
 import { userPermissions } from "../config/permissions";
+import { Prisma } from "../generated/prisma/client";
 
 export class UserModel {
   obj: User;
   permissions: string[];
   constructor(user: User) {
     this.obj = user;
-    this.permissions = this.#getPermissions();
+    this.permissions = this.getPermissions();
   }
 
   static async initUser(userId: number) {
@@ -26,17 +27,19 @@ export class UserModel {
     return this.permissions.includes(permission);
   }
 
-  #getPermissions() {
-    const roles = [ this.obj.is_admin ? "admin" : null, this.obj.is_author ? "author" : null].filter(role => role !== null);
+  getPermissions() {
+    const roles = this.obj.roles as Prisma.JsonArray;
+
     let permissions: string[] = [];
     Object.keys(userPermissions).forEach(permission => {
       for(const role of roles) {
-        if(userPermissions[permission]!.includes(role))  {
+        const roleToString = String(role);
+        if(userPermissions[permission]!.includes(roleToString))  {
           permissions.push(permission); 
           break;
         }
       }
-    })
+    });
 
     return permissions;
   }

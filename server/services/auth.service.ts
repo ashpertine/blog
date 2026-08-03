@@ -3,6 +3,8 @@ import { prisma } from "../lib/prisma.ts";
 import { genPasswordHash, validPasswordHash } from "../utils/password-utils.ts";
 import { AppError } from "../utils/errors.ts";
 import { User } from "../generated/prisma/client.ts";
+import { UserModel } from "../models/user.ts";
+import { userRoles } from "../config/permissions.ts";
 
 export async function createNewUser(username: string, password: string) {
   try {
@@ -50,4 +52,13 @@ export async function getProfile(userId: number) {
   if(!user) throw AppError.notFound("User not found")
 
   return user;
+}
+
+export async function getPermissions(userId: number) {
+  const userModel = await UserModel.initUser(userId);
+  return userModel.getPermissions();
+}
+
+export async function setPermissions(userId: number, role: string ) {
+  if(!userRoles.includes(role)) throw AppError.badRequest("Invalid role given.");
 }

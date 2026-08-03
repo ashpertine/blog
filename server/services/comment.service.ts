@@ -23,7 +23,7 @@ export async function getComment(commentId: number) {
     }
   })
 
-  if (!comment) throw AppError.notFound("Comment not found!");
+  if (!comment) throw AppError.notFound("Comment cannot be found!");
 
   const post = await prisma.post.findFirst({
     where: {
@@ -31,11 +31,14 @@ export async function getComment(commentId: number) {
     }
   })
 
-  if (!post || !post.is_public) throw AppError.notFound("Comment not found!");
+  if (!post || !post.is_public) throw AppError.notFound("Comment cannot be found!");
   return comment;
 }
 
 export async function createComment(userId: number, postId: number, parentCommentId: number | null, content: string) {
+  const userModel = await UserModel.initUser(userId);
+  if (!userModel.hasPermission("createComment")) throw AppError.forbidden("You do not have permission to create a comment.");
+
   await getPost(userId, postId);
 
   const comment = await prisma.comment.create({
@@ -51,6 +54,9 @@ export async function createComment(userId: number, postId: number, parentCommen
 }
 
 export async function modifyComment(userId: number, commentId: number, content: string) {
+  const userModel = await UserModel.initUser(userId);
+  if (!userModel.hasPermission("createComment")) throw AppError.forbidden("You do not have permission to create a comment.");
+  
   try {
     const modifiedComment = await prisma.comment.update({
       data: {
@@ -65,7 +71,7 @@ export async function modifyComment(userId: number, commentId: number, content: 
     return modifiedComment;
   } catch (error) {
     if (error instanceof PrismaClientKnownRequestError && error.code == "P2025") {
-      throw AppError.notFound("Comment not be found!")
+      throw AppError.notFound("You do not have permissions to modify this comment.")
     }
 
     throw error;
@@ -84,7 +90,7 @@ export async function deleteComment(userId: number, commentId: number) {
     return comment;
   } catch (error) {
     if (error instanceof PrismaClientKnownRequestError && error.code == "P2025") {
-      throw AppError.notFound("Comment not be found!")
+      throw AppError.notFound("You do not have permissions to modify this comment.")
     }
 
     throw error;

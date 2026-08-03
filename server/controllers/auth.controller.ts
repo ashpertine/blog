@@ -2,7 +2,7 @@ import { type Response, type Request, type NextFunction } from "express";
 import { matchedData, } from "express-validator";
 import { okRes, errorRes } from "./result-handler.ts";
 import { AppError } from "../utils/errors.ts";
-import { createNewUser, verifyAndGetUser, getProfile } from "../services/auth.service.ts";
+import { createNewUser, verifyAndGetUser, getProfile, getPermissions } from "../services/auth.service.ts";
 import { generateToken } from "../utils/jwt-utils.ts";
 
 
@@ -32,4 +32,11 @@ export async function getUserProfile(req: Request, res: Response) {
 
 
   return okRes(null, null, { user: user }, res);
+}
+
+export async function getUserPermissions(req: Request, res: Response) {
+  const userId = req.user!.id;
+  const perms = await getPermissions(userId);
+
+  return okRes(null, null, {permissions: perms }, res);
 }

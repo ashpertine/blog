@@ -18,8 +18,7 @@ model User {
   password        String
   bio             String   @default("Hi! I am a user on this blog.")
   profile_picture String?
-  is_author       Boolean  @default(false)
-  is_admin        Boolean  @default(false)
+  roles           Json     @default("[\"commenter\"]")
   created_date    DateTime @default(now())
 
   user_posts    Post[]

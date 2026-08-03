@@ -11,6 +11,7 @@ function required(env_variable: string) {
 
 export const env = {
   databaseUrl: required("DATABASE_URL"),
+  initAdminPass: required("INITIAL_ADMIN_PASS"),
   appPort: Number(process.env["APP_PORT"] ?? 3000),
   jwtSecretKey: required("JWT_SECRET_KEY")
 }
