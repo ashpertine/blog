@@ -18,7 +18,7 @@ model User {
   password        String
   bio             String   @default("Hi! I am a user on this blog.")
   profile_picture String?
-  roles           Json     @default("[\"commenter\"]")
+  roles           String[] @default(["commenter"])
   created_date    DateTime @default(now())
 
   user_posts    Post[]

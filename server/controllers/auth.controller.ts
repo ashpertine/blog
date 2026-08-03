@@ -13,7 +13,7 @@ export async function handleUserRegister(req: Request, res: Response) {
   if (password !== confirmPassword) return errorRes(AppError.badRequest("Your inputs are invalid"), { details: "Your passwords do not match!" }, res);
 
   const user = await createNewUser(username, password);
-  return okRes(201, "User created.", { username: user.username, createdAt: user.created_date }, res);
+  return okRes(201, "User created.", { user: user }, res);
 }
 
 export async function handleUserLogin(req: Request, res: Response) {
@@ -39,7 +39,7 @@ export async function getUserPermissions(req: Request, res: Response) {
   const userId = req.user!.id;
   const perms = await getPermissions(userId);
 
-  return okRes(null, null, {permissions: perms }, res);
+  return okRes(null, null, { permissions: perms }, res);
 }
 
 export async function setUserPermissions(req: Request, res: Response) {
@@ -50,10 +50,10 @@ export async function setUserPermissions(req: Request, res: Response) {
   if (!Array.isArray(roles) || roles.length === 0 || !roles.every((r) => typeof r === "string")) {
     throw AppError.badRequest("Roles (roles) must be a non-empty array of strings.");
   }
-  
+
   const password = req.body.password ? String(req.body.password) : null;
-  if(!roles) throw AppError.badRequest("Roles (roles) array needs to be defined.");
+  if (!roles) throw AppError.badRequest("Roles (roles) array needs to be defined.");
 
   const modifiedUser = await setPermissions(fromUserId, targetUserId, roles, password);
-  return okRes(null, null, {user: modifiedUser}, res);
+  return okRes(null, null, { user: modifiedUser }, res);
 }

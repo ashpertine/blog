@@ -7,6 +7,16 @@ import { User } from "../generated/prisma/client.ts";
 import { UserModel } from "../models/user.ts";
 import { userRoles } from "../config/permissions.ts";
 
+export function userAllowedProperties(user: User) {
+  return {
+    id: user.id,
+    username: user.username,
+    bio: user.bio,
+    profile_picture: user.profile_picture,
+    created_date: user.created_date
+  }
+}
+
 export async function createNewUser(username: string, password: string) {
   try {
     const hashedPassword = await genPasswordHash(password);
@@ -27,7 +37,7 @@ export async function createNewUser(username: string, password: string) {
   }
 }
 
-export async function verifyAndGetUser(username: string, password: string): Promise<User> {
+export async function verifyAndGetUser(username: string, password: string) {
   const user = await prisma.user.findUnique({
     where: {
       username: username
@@ -40,7 +50,7 @@ export async function verifyAndGetUser(username: string, password: string): Prom
 
   if (!match) throw AppError.badRequest("Incorrect username/password.");
 
-  return user;
+  return userAllowedProperties(user);
 }
 
 export async function getProfile(userId: number) {
@@ -50,9 +60,9 @@ export async function getProfile(userId: number) {
     }
   })
 
-  if(!user) throw AppError.notFound("User not found")
+  if (!user) throw AppError.notFound("User not found")
 
-  return user;
+  return userAllowedProperties(user);
 }
 
 export async function getPermissions(userId: number) {
@@ -62,27 +72,27 @@ export async function getPermissions(userId: number) {
 
 export async function setPermissions(fromUserId: number, targetUserId: number, roles: string[], password: string | null) {
   const userModel = await UserModel.initUser(fromUserId);
-  if(!userModel.hasPermission("modifyRoles")) throw AppError.forbidden("You do not have permission to modify roles.");
-  
-  for(const role of roles) {
-    if(!userRoles.includes(role)) throw AppError.badRequest("Invalid role given.");
+  if (!userModel.hasPermission("modifyRoles")) throw AppError.forbidden("You do not have permission to modify roles.");
+
+  for (const role of roles) {
+    if (!userRoles.includes(role)) throw AppError.badRequest("Invalid role given.");
   }
 
-  if(fromUserId === targetUserId && !roles.includes("admin") && userModel.roles.includes("admin")) {
-    if(password === null) throw AppError.forbidden("You cannot remove your admin privileges without your password.");
-    
+  if (fromUserId === targetUserId && !roles.includes("admin") && userModel.obj.roles.includes("admin")) {
+    if (password === null) throw AppError.forbidden("You cannot remove your admin privileges without your password.");
+
     const match = await validPasswordHash(password, userModel.obj.password);
-    if(!match) throw AppError.badRequest("Password for removing admin privileges is incorrect."); 
+    if (!match) throw AppError.badRequest("Password for removing admin privileges is incorrect.");
   }
 
   const modifiedUser = await prisma.user.update({
     data: {
-      roles: roles as Prisma.JsonArray
+      roles: roles
     },
     where: {
       id: targetUserId
     }
   })
 
-  return modifiedUser;
+  return userAllowedProperties(modifiedUser);
 }
