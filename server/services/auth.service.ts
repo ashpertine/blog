@@ -1,5 +1,4 @@
 import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
-import { Prisma } from "../generated/prisma/client.ts";
 import { prisma } from "../lib/prisma.ts";
 import { genPasswordHash, validPasswordHash } from "../utils/password-utils.ts";
 import { AppError } from "../utils/errors.ts";
