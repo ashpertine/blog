@@ -9,11 +9,11 @@ export function registerUserApi(username: string, password: string, confirmPassw
 }
 
 export function getProfileApi(userJwt: string) {
-  return fetchWithAuth("GET", "/api/profile", {}, userJwt);
+  return fetchWithAuth("GET", "/api/profile", null, userJwt);
 }
 
 export function getPermissionsApi(userJwt: string) {
-  return fetchWithAuth("GET", "/api/profile/permissions", {}, userJwt);
+  return fetchWithAuth("GET", "/api/profile/permissions", null, userJwt);
 }
 
 export function setPermissionsApi(userId: number, roles: string[], userJwt: string) {

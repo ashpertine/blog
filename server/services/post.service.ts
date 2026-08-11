@@ -30,7 +30,8 @@ export async function createPost(userId: number, title: string | null, content: 
     data: {
       user_id: userModel.obj.id,
       title: title ?? "Untitled Blog",
-      content: content ?? "This is the start of your blog."
+      content: content ?? "This is the start of your blog.",
+      last_updated_date: new Date() 
     }
   })
 
@@ -38,16 +39,19 @@ export async function createPost(userId: number, title: string | null, content: 
 }
 
 export async function getAllPublicPosts(limit: number | null) {
-  const posts = limit ? await prisma.post.findMany({
-    where: {
-      is_public: true
-    },
-    take: limit
-  }) : await prisma.post.findMany({
+  const options = {
     where: {
       is_public: true,
+    },
+    include: {
+      post_user: {
+        select: {
+          username: true
+        }
+      }
     }
-  })
+  }
+  const posts = limit ? await prisma.post.findMany({...options, take: limit}) : await prisma.post.findMany(options)
 
   return posts;
 }
@@ -87,14 +91,22 @@ export async function modifyPost(userId: number, postId: number, title: string, 
 export async function modifyPostStatus(userId: number, postId: number, isPublic: boolean) {
   await checkAndGetUserPost(userId, postId);
 
-  const modifiedPost = await prisma.post.update({
+  const modifiedPost = isPublic ? await prisma.post.update({
     where: {
       id: postId
     },
     data: {
-      is_public: isPublic
+      is_public: isPublic,
+      published_date: new Date(),
     }
-  });
+  }) : await prisma.post.update({
+    where: {
+      id: postId
+    },
+    data: {
+      is_public: isPublic,
+    }
+  })
 
   return modifiedPost;
 }

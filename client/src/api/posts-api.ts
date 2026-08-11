@@ -1,11 +1,11 @@
 import { fetchNoAuth, fetchWithAuth } from "./base";
 
 export function getAllPostsApi() {
-  return fetchNoAuth("GET", "/api/posts", {});
+  return fetchNoAuth("GET", "/api/posts", null);
 }
 
 export function getPostByIdApi(postId: number, userJwt: string) {
-  return fetchWithAuth("GET", `/api/posts/${postId}`, {}, userJwt);
+  return fetchWithAuth("GET", `/api/posts/${postId}`, null, userJwt);
 }
 
 export function createPostApi(title: string, content: string, userJwt: string) {
@@ -21,11 +21,11 @@ export function updatePostStatusApi(postId: number, isPublic: boolean, userJwt: 
 }
 
 export function deletePostStatusApi(postId: number, userJwt: string) {
-  return fetchWithAuth("DELETE", `/api/posts/${postId}`, {}, userJwt);
+  return fetchWithAuth("DELETE", `/api/posts/${postId}`, null, userJwt);
 }
 
 export function getPostCommentsApi(postId: number) {
-  return fetchNoAuth("GET", `/api/posts/${postId}/comments`, {});
+  return fetchNoAuth("GET", `/api/posts/${postId}/comments`, null);
 }
 
 export function createCommentApi(postId: number, parentCommentId: number | null, content: string, userJwt: string) {
