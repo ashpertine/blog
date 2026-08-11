@@ -1,0 +1,32 @@
+@import "tailwindcss";
+
+/* afacad-regular - latin */
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Afacad';
+  font-style: normal;
+  font-weight: 400;
+  src: url('./fonts/afacad-v3-latin-regular.woff2');
+}
+
+/* afacad-500 - latin */
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Afacad';
+  font-style: normal;
+  font-weight: 500;
+  src: url('./fonts/afacad-v3-latin-500.woff2');
+}
+
+/* afacad-700 - latin */
+@font-face {
+  font-display: swap; /* Check https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display for other options. */
+  font-family: 'Afacad';
+  font-style: normal;
+  font-weight: 700;
+  src: url('./fonts/afacad-v3-latin-700.woff2');
+}
+
+@theme {
+  --font-app: 'Afacad'
+}

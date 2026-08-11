@@ -15,11 +15,11 @@ type Post = {
 }
 
 function formatDate(dateString: string | null) {
-  if(dateString === null) return dateString;
+  if (dateString === null) return dateString;
   const date = new Date(dateString);
   return date.toLocaleDateString('en-US', {
     year: "numeric",
-    month: "long",
+    month: "numeric",
     day: "numeric"
   });
 }
@@ -27,21 +27,28 @@ function formatDate(dateString: string | null) {
 function BlogList() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [error, setError] = useState(null);
+  const [isLoading, setLoading] = useState(true);
 
   useEffect(() => {
     PostsApi.getAllPostsApi().then(body => {
       setPosts(body.posts)
     }).catch(error => {
       setError(error);
+    }).finally(() => {
+      setLoading(false);
     })
   }, []);
 
-  if(error) return <div>
-    <h1>Error: error.message</h1>
+  if (isLoading) return <div>
+    <h1>Loading</h1>
+  </div>
+
+  if (error) return <div>
+    <h1>Error: {(error as Error).message} </h1>
   </div>
 
   return <div>
-    {posts.map(post => { 
+    {posts.map(post => {
       return <ul key={`blog-post-${post.id}`}>
         <li>Title: {post.title}</li>
         <li>From: {post.post_user.username}</li>
