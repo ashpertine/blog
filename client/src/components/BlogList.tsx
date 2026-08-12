@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import * as PostsApi from "../api/posts-api";
+import ErrorBox from "./ErrorBox";
 
 type Post = {
   id: number,
@@ -43,17 +44,17 @@ function BlogList() {
     <h1>Loading</h1>
   </div>
 
-  if (error) return <div>
-    <h1>Error: {(error as Error).message} </h1>
-  </div>
+  if (error) return <ErrorBox message={(error as Error).message}/>
 
-  return <div>
+  return <div className="flex flex-wrap gap-4 p-4">
     {posts.map(post => {
-      return <ul key={`blog-post-${post.id}`}>
-        <li>Title: {post.title}</li>
-        <li>From: {post.post_user.username}</li>
-        <li>Date: {formatDate(post.published_date)}</li>
-      </ul>
+      return <div key={`blog-post-${post.id}`} className="bg-gray-600 min-w-xs sm:min-w-lg flex-1 shadow-md p-4 text-gray-200 rounded-sm">
+        <h1>{post.title}</h1>
+        <p>by: {post.post_user.username}</p>
+        <p>Published on: {formatDate(post.published_date)}</p>
+        <p>Last updated: {formatDate(post.last_updated_date)}</p>
+        <a href="#" className="text-sky-200 underline">Read more</a>
+      </div> 
     })}
   </div>
 }

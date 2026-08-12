@@ -12,7 +12,10 @@ function RegisterBox() {
         <input className="border border-stone-400 rounded text-black bg-gray-300 px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500" type="password" id="confirm-password" name="confirmPassword" />
       </div>
     </div>
-    <button className="bg-sky-600 rounded-lg px-4 py-2 hover:bg-sky-700 hover:cursor-pointer border-sky-900 self-start" type="submit">Register</button>
+    <div className="flex gap-2 items-center">
+      <button className="bg-sky-600 rounded-lg px-4 py-2 hover:bg-sky-700 hover:cursor-pointer border-sky-900 self-start" type="submit">Register</button>
+      <a href="login" className="text-sky-300 underline">Login</a>
+    </div>
   </form>
 }
 

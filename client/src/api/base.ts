@@ -7,7 +7,18 @@ export function fetchNoAuth(method: AppHttpMethod, url: string, data: Record<str
     headers: {
       "Content-Type": "application/json"
     }
-  }).then((response) => response.json()).catch(error => error)
+  }).then((response) => {
+    if(response.status >= 400) {
+      throw new Error(`Error ${response.status}: ${response.statusText}`)
+    }
+    return response;
+  }).then(response => {
+    return response.json().then(body => {
+      if(!body.success) throw new Error(`Error ${body.statusCode}: ${body.message}`)
+
+      return body;
+    })
+  });
 }
 
 export function fetchWithAuth(method: AppHttpMethod, url: string, data: Record<string, unknown> | null, jwt: string) {
@@ -19,6 +30,15 @@ export function fetchWithAuth(method: AppHttpMethod, url: string, data: Record<s
       "Authorization": `Bearer ${jwt}`
     }
   }).then((response) => {
-    response.json()
-  }).catch(error => error)
+    if(response.status >= 400) {
+      throw new Error(`Error ${response.status}: ${response.statusText}`)
+    }
+    return response;
+  }).then(response => {
+    return response.json().then(body => {
+      if(!body.success) throw new Error(`Error ${body.statusCode}: ${body.message}`)
+
+      return body;
+    })
+  });
 }
