@@ -3,7 +3,7 @@ import { AppError } from "../utils/errors";
 
 type responseData = {
   success: boolean,
-  message: string | string[],
+  message: string,
   [additionalData: string]: unknown
 }
 
@@ -11,13 +11,13 @@ function buildResponseData(success: boolean, message: string | string[] | null, 
   if (!additionalData) {
     return {
       success,
-      message: message === null ? '' : message
+      message: message === null ? '' : String(message)
     }
   }
 
   return {
     success,
-    message: message === null ? '' : message,
+    message: message === null ? '' : String(message),
     ...additionalData
   }
 }
@@ -27,7 +27,7 @@ export function errorRes(error: Error, additionalData: Record<string, unknown> |
     console.log(error);
     return res.status(error.statusCode).json(buildResponseData(false, error.message, additionalData))
   }
-  if(error instanceof SyntaxError) {
+  if (error instanceof SyntaxError) {
     return res.status(400).json(buildResponseData(false, error.message, additionalData))
   }
   return res.status(500).json(buildResponseData(false, error.message, additionalData))

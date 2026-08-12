@@ -27,14 +27,14 @@ function formatDate(dateString: string | null) {
 
 function BlogList() {
   const [posts, setPosts] = useState<Post[]>([]);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<Error | null>(null);
   const [isLoading, setLoading] = useState(true);
 
   useEffect(() => {
     PostsApi.getAllPostsApi().then(body => {
       setPosts(body.posts)
     }).catch(error => {
-      setError(error);
+      setError(error as Error);
     }).finally(() => {
       setLoading(false);
     })
@@ -44,7 +44,9 @@ function BlogList() {
     <h1>Loading</h1>
   </div>
 
-  if (error) return <ErrorBox message={(error as Error).message}/>
+  if (error) {
+    return <ErrorBox message={(error as Error).message} children={null} />
+  }
 
   return <div className="flex flex-wrap gap-4 p-4">
     {posts.map(post => {
@@ -54,7 +56,7 @@ function BlogList() {
         <p>Published on: {formatDate(post.published_date)}</p>
         <p>Last updated: {formatDate(post.last_updated_date)}</p>
         <a href="#" className="text-sky-200 underline">Read more</a>
-      </div> 
+      </div>
     })}
   </div>
 }
