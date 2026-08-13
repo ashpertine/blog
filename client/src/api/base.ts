@@ -1,9 +1,10 @@
 type AppHttpMethod = "POST" | "GET" | "DELETE" | "PATCH"
 
-type responseData = {
+export type responseData = {
   success: boolean,
   message: string | string[],
   details?: string[],
+  token?: string,
   [additionalData: string]: unknown
 }
 
