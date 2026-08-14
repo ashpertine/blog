@@ -6,16 +6,6 @@ import { User } from "../generated/prisma/client.ts";
 import { UserModel } from "../models/user.ts";
 import { userRoles } from "../config/permissions.ts";
 
-export function userAllowedProperties(user: User) {
-  return {
-    id: user.id,
-    username: user.username,
-    bio: user.bio,
-    profile_picture: user.profile_picture,
-    created_date: user.created_date
-  }
-}
-
 export async function createNewUser(username: string, password: string) {
   try {
     const hashedPassword = await genPasswordHash(password);
@@ -49,7 +39,7 @@ export async function verifyAndGetUser(username: string, password: string) {
 
   if (!match) throw AppError.badRequest("Incorrect username/password.");
 
-  return userAllowedProperties(user);
+  return (new UserModel(user)).getAllowedProperties();
 }
 
 export async function getProfile(userId: number) {
@@ -61,7 +51,7 @@ export async function getProfile(userId: number) {
 
   if (!user) throw AppError.notFound("User not found")
 
-  return userAllowedProperties(user);
+  return (new UserModel(user)).getAllowedProperties();
 }
 
 export async function getPermissions(userId: number) {
@@ -93,5 +83,5 @@ export async function setPermissions(fromUserId: number, targetUserId: number, r
     }
   })
 
-  return userAllowedProperties(modifiedUser);
+  return (new UserModel(modifiedUser)).getAllowedProperties;
 }

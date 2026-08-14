@@ -7,7 +7,8 @@ type AuthUser = {
   username: string,
   bio: string,
   profile_picutre: string,
-  created_date: string
+  created_date: string,
+  permissions: string[]
 }
 
 type AuthContextType = {
@@ -16,10 +17,9 @@ type AuthContextType = {
   loggedIn: boolean,
   setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>,
   login: (username: string, password: string) => void,
-  logout: () => void
+  logout: () => void,
+  hasPermission: (permission: string) => boolean
 };
-
-
 
 function useAuth() {
   const authContext = useContext(AuthContext);
@@ -41,10 +41,22 @@ function AuthProvider({ children }: { children: ReactNode }) {
     if (!body.token) throw new Error('Token not found on response body');
     const jwt = body.token;
     localStorage.setItem("token", jwt);
+
+    const { user } = await getProfileApi(jwt) as { user: AuthUser} ;
+    setAuthUser(user);
+    setLoggedIn(true);
   }
 
   async function logout() {
     localStorage.removeItem("token");
+    setAuthUser(null);
+    setLoggedIn(false);
+  }
+
+  function hasPermission(permission: string): boolean {
+    if(!authUser) return false;
+
+    return authUser.permissions.includes(permission);
   }
 
   useEffect(() => {
@@ -54,9 +66,9 @@ function AuthProvider({ children }: { children: ReactNode }) {
       const user = body.user as AuthUser;
       setAuthUser(user);
       setLoggedIn(true);
+      return;
     })
-
-  }, [authUser])
+  }, [])
 
   const value = {
     authUser,
@@ -64,7 +76,8 @@ function AuthProvider({ children }: { children: ReactNode }) {
     loggedIn,
     setLoggedIn,
     login,
-    logout
+    logout,
+    hasPermission
   } as AuthContextType
 
   return <AuthContext value={value}>{children}</AuthContext>

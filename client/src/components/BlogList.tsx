@@ -41,13 +41,12 @@ function BlogList() {
   }, []);
 
   if (isLoading) return <div>
-    <h1>Loading</h1>
+    <h1 className="text-gray-100">Loading</h1>
   </div>
 
   if (error) {
-    return <ErrorBox message={(error as Error).message} children={null} />
+    return <ErrorBox message={(error as Error).message} details={null} />
   }
-
   return <div className="flex flex-wrap gap-4 p-4">
     {posts.map(post => {
       return <div key={`blog-post-${post.id}`} className="bg-gray-600 min-w-xs sm:min-w-lg flex-1 shadow-md p-4 text-gray-200 rounded-sm">

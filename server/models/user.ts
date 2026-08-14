@@ -42,4 +42,15 @@ export class UserModel {
 
     return permissions;
   }
+
+  getAllowedProperties() {
+    return {
+      id: this.obj.id,
+      username: this.obj.username,
+      bio: this.obj.bio,
+      profile_picture: this.obj.profile_picture,
+      created_date: this.obj.created_date,
+      permissions: this.permissions
+  }
+  }
 }
