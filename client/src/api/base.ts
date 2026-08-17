@@ -50,16 +50,14 @@ export function fetchWithAuth(method: AppHttpMethod, url: string, data: Record<s
     body: data ? JSON.stringify(data) : data,
     headers: {
       "Content-Type": "application/json",
-      ...(jwt !== null && {"Authorization": `Bearer ${jwt}`})
+      ...(jwt !== null && { "Authorization": `Bearer ${jwt}` })
     }
   }).then((response) => {
+    if (response.status >= 400) {
+      throw new FetchError(response, null);
+    }
     return response.json().then(body => {
       if (!body.success) throw new FetchError(response, body);
-
-      if (response.status >= 400) {
-        throw new FetchError(response, null);
-      }
-
       return body;
     })
   })

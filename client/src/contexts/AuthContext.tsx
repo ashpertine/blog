@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext, createContext, type ReactNode } from "react";
 import { loginUserApi, getProfileApi } from "../api/auth-api";
-import type { responseData } from "../api/base";
+import { FetchError, type responseData } from "../api/base";
 
 const TOKEN_NAME = "token";
 
@@ -48,7 +48,7 @@ function AuthProvider({ children }: { children: ReactNode }) {
     const jwt = body.token;
     localStorage.setItem(TOKEN_NAME, jwt);
 
-    const { user } = await getProfileApi(jwt) as { user: AuthUser} ;
+    const { user } = await getProfileApi(jwt) as { user: AuthUser };
     setAuthUser(user);
     setLoggedIn(true);
   }
@@ -60,23 +60,30 @@ function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   function hasPermission(permission: string): boolean {
-    if(!authUser) return false;
+    if (!authUser) return false;
 
     return authUser.permissions.includes(permission);
   }
 
   useEffect(() => {
     const jwt = localStorage.getItem(TOKEN_NAME);
-    if (jwt === null){
+    if (jwt === null) {
       setLoading(false);
       return;
     }
     getProfileApi(jwt).then(body => {
       const user = body.user as AuthUser;
-      setAuthUser({...user, jwt});
+      setAuthUser({ ...user, jwt });
       setLoggedIn(true);
       setLoading(false);
       return;
+    }).catch(error => {
+      if (error instanceof FetchError && error.statusCode === 401) {
+        logout();
+        return;
+      }
+
+      return error;
     })
   }, [])
 

@@ -1,11 +1,11 @@
 import { fetchNoAuth, fetchWithAuth } from "./base"
 
 export function loginUserApi(username: string, password: string) {
-  return fetchNoAuth("POST", "/api/login", {username, password});
+  return fetchNoAuth("POST", "/api/login", { username, password });
 }
 
 export function registerUserApi(username: string, password: string, confirmPassword: string) {
-  return fetchNoAuth("POST", "/api/register", {username, password, confirmPassword});
+  return fetchNoAuth("POST", "/api/register", { username, password, confirmPassword });
 }
 
 export function getProfileApi(userJwt: string) {

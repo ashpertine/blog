@@ -7,14 +7,14 @@ type NavigationGuardProps = {
   children: React.ReactNode
 }
 
-function NavigationGuard({ inverse = false , toUrl = "/login", children }: NavigationGuardProps ) {
+function NavigationGuard({ inverse = false, toUrl = "/login", children }: NavigationGuardProps) {
   const { loggedIn, loading } = useAuth();
 
-  if(loading) return <div>LOADING</div>
-  
-  if(inverse) { // redirect to a url when going to an unprotected route
+  if (loading) return <div>LOADING</div>
+
+  if (inverse) { // redirect to a url when going to an unprotected route
     return loggedIn ? <Navigate to={toUrl} replace /> : <>{children}</>;
-  }else { //redirect o a url when going to a protected route
+  } else { //redirect o a url when going to a protected route
     return loggedIn ? <>{children}</> : <Navigate to={toUrl} replace />;
   }
 }
