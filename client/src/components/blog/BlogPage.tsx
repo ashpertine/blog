@@ -25,12 +25,7 @@ function BlogPage() {
   if(!postId) setError(new Error("Post ID is not defined!"));
   
   useEffect(() => {
-    if(!authUser) {
-      setLoading(true);
-      return;
-    }
-
-    getPostByIdApi(Number(postId), authUser.jwt).then(body => {
+    getPostByIdApi(Number(postId), authUser ? authUser.jwt : authUser).then(body => {
       const post = body.post as Post;
       setTitle(post.title);
       setContent(post.content);
@@ -46,9 +41,9 @@ function BlogPage() {
     return <ErrorBox message={(error as Error).message} details={null} />
   }
   
-  return <div>
-    <h1>{title}</h1>
-    <p>{content}</p>
+  return <div className="text-slate-100 m-4">
+    <h1 className="text-5xl">{title}</h1>
+    <p className="text-lg">{content}</p>
   </div>
 }
 

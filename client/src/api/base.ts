@@ -44,13 +44,13 @@ export function fetchNoAuth(method: AppHttpMethod, url: string, data: Record<str
   })
 }
 
-export function fetchWithAuth(method: AppHttpMethod, url: string, data: Record<string, unknown> | null, jwt: string) {
+export function fetchWithAuth(method: AppHttpMethod, url: string, data: Record<string, unknown> | null, jwt: string | null) {
   return fetch(url, {
     method: method,
     body: data ? JSON.stringify(data) : data,
     headers: {
       "Content-Type": "application/json",
-      "Authorization": `Bearer ${jwt}`
+      ...(jwt !== null && {"Authorization": `Bearer ${jwt}`})
     }
   }).then((response) => {
     return response.json().then(body => {

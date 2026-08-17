@@ -4,7 +4,7 @@ export function getAllPostsApi() {
   return fetchNoAuth("GET", "/api/posts", null);
 }
 
-export function getPostByIdApi(postId: number, userJwt: string) {
+export function getPostByIdApi(postId: number, userJwt: string | null) {
   return fetchWithAuth("GET", `/api/posts/${postId}`, null, userJwt);
 }
 
