@@ -2,13 +2,16 @@ import { useState, useEffect, useContext, createContext, type ReactNode } from "
 import { loginUserApi, getProfileApi } from "../api/auth-api";
 import type { responseData } from "../api/base";
 
+const TOKEN_NAME = "token";
+
 type AuthUser = {
   id: number,
   username: string,
   bio: string,
   profile_picutre: string,
   created_date: string,
-  permissions: string[]
+  permissions: string[],
+  jwt: string
 }
 
 type AuthContextType = {
@@ -16,6 +19,8 @@ type AuthContextType = {
   setAuthUser: React.Dispatch<React.SetStateAction<AuthUser | null>>,
   loggedIn: boolean,
   setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>,
+  loading: boolean,
+  setLoading: React.Dispatch<React.SetStateAction<boolean>>,
   login: (username: string, password: string) => void,
   logout: () => void,
   hasPermission: (permission: string) => boolean
@@ -35,12 +40,13 @@ const AuthContext = createContext<AuthContextType | null>(null);
 function AuthProvider({ children }: { children: ReactNode }) {
   const [authUser, setAuthUser] = useState<AuthUser | null>(null);
   const [loggedIn, setLoggedIn] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   async function login(username: string, password: string) {
     const body = await loginUserApi(username, password) as responseData;
     if (!body.token) throw new Error('Token not found on response body');
     const jwt = body.token;
-    localStorage.setItem("token", jwt);
+    localStorage.setItem(TOKEN_NAME, jwt);
 
     const { user } = await getProfileApi(jwt) as { user: AuthUser} ;
     setAuthUser(user);
@@ -48,7 +54,7 @@ function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function logout() {
-    localStorage.removeItem("token");
+    localStorage.removeItem(TOKEN_NAME);
     setAuthUser(null);
     setLoggedIn(false);
   }
@@ -60,12 +66,16 @@ function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   useEffect(() => {
-    const jwt = localStorage.getItem("token");
-    if (jwt === null) return;
+    const jwt = localStorage.getItem(TOKEN_NAME);
+    if (jwt === null){
+      setLoading(false);
+      return;
+    }
     getProfileApi(jwt).then(body => {
       const user = body.user as AuthUser;
-      setAuthUser(user);
+      setAuthUser({...user, jwt});
       setLoggedIn(true);
+      setLoading(false);
       return;
     })
   }, [])
@@ -75,6 +85,8 @@ function AuthProvider({ children }: { children: ReactNode }) {
     setAuthUser,
     loggedIn,
     setLoggedIn,
+    loading,
+    setLoading,
     login,
     logout,
     hasPermission

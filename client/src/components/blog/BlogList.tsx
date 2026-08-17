@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import * as PostsApi from "../api/posts-api";
-import ErrorBox from "./ErrorBox";
+import * as PostsApi from "../../api/posts-api";
+import ErrorBox from "../ErrorBox";
+import { NavLink } from "react-router";
 
 type Post = {
   id: number,
@@ -47,14 +48,14 @@ function BlogList() {
   if (error) {
     return <ErrorBox message={(error as Error).message} details={null} />
   }
-  return <div className="flex flex-wrap gap-4 p-4">
+  return <div className="flex flex-wrap gap-4">
     {posts.map(post => {
       return <div key={`blog-post-${post.id}`} className="bg-gray-600 min-w-xs sm:min-w-lg flex-1 shadow-md p-4 text-gray-200 rounded-sm">
         <h1>{post.title}</h1>
         <p>by: {post.post_user.username}</p>
         <p>Published on: {formatDate(post.published_date)}</p>
         <p>Last updated: {formatDate(post.last_updated_date)}</p>
-        <a href="#" className="text-sky-200 underline">Read more</a>
+        <NavLink to={`posts/${post.id}`} className="text-sky-200 underline">Read more</NavLink>
       </div>
     })}
   </div>

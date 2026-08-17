@@ -2,14 +2,16 @@ import { Navigate } from "react-router"
 import { useAuth } from "../../contexts/AuthContext"
 
 type NavigationGuardProps = {
-  inverse: boolean,
+  inverse?: boolean,
   toUrl: string,
   children: React.ReactNode
 }
 
 function NavigationGuard({ inverse = false , toUrl = "/login", children }: NavigationGuardProps ) {
-  const { loggedIn } = useAuth();
+  const { loggedIn, loading } = useAuth();
 
+  if(loading) return <div>LOADING</div>
+  
   if(inverse) { // redirect to a url when going to an unprotected route
     return loggedIn ? <Navigate to={toUrl} replace /> : <>{children}</>;
   }else { //redirect o a url when going to a protected route
