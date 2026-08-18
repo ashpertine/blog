@@ -24,26 +24,6 @@ export class FetchError extends Error {
   }
 }
 
-export function fetchNoAuth(method: AppHttpMethod, url: string, data: Record<string, unknown> | null) {
-  return fetch(url, {
-    method: method,
-    body: data ? JSON.stringify(data) : data,
-    headers: {
-      "Content-Type": "application/json"
-    }
-  }).then((response) => {
-    return response.json().then(body => {
-      if (!body.success) throw new FetchError(response, body);
-
-      if (response.status >= 400) {
-        throw new FetchError(response, null);
-      }
-
-      return body;
-    })
-  })
-}
-
 export function fetchWithAuth(method: AppHttpMethod, url: string, data: Record<string, unknown> | null, jwt: string | null) {
   return fetch(url, {
     method: method,

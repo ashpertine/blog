@@ -1,7 +1,7 @@
-import { fetchNoAuth, fetchWithAuth } from "./base";
+import { fetchWithAuth } from "./base";
 
 export function getAllPostsApi() {
-  return fetchNoAuth("GET", "/api/posts", null);
+  return fetchWithAuth("GET", "/api/posts", null, null);
 }
 
 export function getPostByIdApi(postId: number, userJwt: string | null) {
@@ -25,7 +25,7 @@ export function deletePostStatusApi(postId: number, userJwt: string) {
 }
 
 export function getPostCommentsApi(postId: number) {
-  return fetchNoAuth("GET", `/api/posts/${postId}/comments`, null);
+  return fetchWithAuth("GET", `/api/posts/${postId}/comments`, null, null);
 }
 
 export function createCommentApi(postId: number, parentCommentId: number | null, content: string, userJwt: string) {
