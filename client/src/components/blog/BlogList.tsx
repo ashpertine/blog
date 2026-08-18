@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import * as PostsApi from "../../api/posts-api";
 import ErrorBox from "../ErrorBox";
-import { NavLink } from "react-router";
+import { useAuth } from "../../contexts/AuthContext";
+import BlogListItem from "./BlogListItem";
+import { updatePostStatusApi } from "../../api/posts-api";
 
-type Post = {
+export type Post = {
   id: number,
   user_id: number,
   title: string,
@@ -16,30 +18,54 @@ type Post = {
   }
 }
 
-function formatDate(dateString: string | null) {
-  if (dateString === null) return dateString;
-  const date = new Date(dateString);
-  return date.toLocaleDateString('en-US', {
-    year: "numeric",
-    month: "numeric",
-    day: "numeric"
-  });
+type BlogListProps = {
+  fromUser?: number
+  showPublicStatus?: boolean
+  showListButtons?: boolean
 }
 
-function BlogList() {
+function BlogList({ fromUser, showPublicStatus = false, showListButtons = false }: BlogListProps) {
+  const { authUser, hasPermission } = useAuth();
   const [posts, setPosts] = useState<Post[]>([]);
   const [error, setError] = useState<Error | null>(null);
   const [isLoading, setLoading] = useState(true);
 
-  useEffect(() => {
-    PostsApi.getAllPostsApi().then(body => {
+  function getPosts() {
+    if(!fromUser) {
+      PostsApi.getAllPostsApi().then(body => {
+        setPosts(body.posts)
+      }).catch(error => {
+        setError(error as Error);
+      }).finally(() => {
+        setLoading(false);
+      })
+      return;
+    }
+    
+    PostsApi.getPostsByUserApi(fromUser, authUser && authUser.jwt).then(body => {
       setPosts(body.posts)
     }).catch(error => {
       setError(error as Error);
     }).finally(() => {
       setLoading(false);
     })
-  }, []);
+    return;
+  }
+
+  useEffect(() => {
+    getPosts();
+  }, [fromUser, authUser]);
+
+  function togglePublicStatus(post: Post) {
+    if(!hasPermission("modifyOwnPost")) return;
+    
+    setLoading(true);
+    updatePostStatusApi(post.id, !post.is_public, authUser!.jwt).then(() => getPosts()).catch(error => {
+      setError(error as Error);
+    }).finally(() => {
+      setLoading(false);
+    })
+  }
 
   if (isLoading) return <div>
     <h1 className="text-gray-100">Loading</h1>
@@ -48,15 +74,10 @@ function BlogList() {
   if (error) {
     return <ErrorBox message={(error as Error).message} details={null} />
   }
+
   return <div className="flex flex-wrap gap-4">
     {posts.map(post => {
-      return <div key={`blog-post-${post.id}`} className="bg-gray-600 min-w-xs sm:min-w-lg flex-1 shadow-md p-4 text-gray-200 rounded-sm">
-        <h1>{post.title}</h1>
-        <p>by: {post.post_user.username}</p>
-        <p>Published on: {formatDate(post.published_date)}</p>
-        <p>Last updated: {formatDate(post.last_updated_date)}</p>
-        <NavLink to={`posts/${post.id}`} className="text-sky-200 underline">Read more</NavLink>
-      </div>
+      return <BlogListItem key={`blog-post-${post.id}`} post={post} showPublicStatus={showPublicStatus} showButtons={showListButtons} togglePublicStatus={togglePublicStatus}/>
     })}
   </div>
 }

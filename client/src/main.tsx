@@ -14,10 +14,10 @@ createRoot(document.getElementById('root')!).render(
       <AuthProvider>
         <Routes>
           <Route index element={<App />} />
-          <Route path="login" element={<AuthPage isLogin={true} />} />
-          <Route path="register" element={<AuthPage isLogin={false} />} />
-          <Route path="profile" element={<ProfilePage />} />
-          <Route path="posts/:postId" element={<BlogPage />}></Route>
+          <Route path="/login" element={<AuthPage isLogin={true} />} />
+          <Route path="/register" element={<AuthPage isLogin={false} />} />
+          <Route path="/profile" element={<ProfilePage />} />
+          <Route path="/posts/:postId" element={<BlogPage />}></Route>
         </Routes>
       </AuthProvider>
     </BrowserRouter>

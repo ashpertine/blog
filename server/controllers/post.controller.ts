@@ -18,6 +18,15 @@ export async function getAllPosts(req: Request, res: Response) {
   return okRes(null, "Successfully fetched posts.", { posts: posts }, res);
 }
 
+export async function getPostsByUser(req: Request, res: Response) {
+  const userId = getParamResourceId(req, "userId");
+  const fromUserId = req.user ? req.user.id : null;
+  const onlyPublic = fromUserId !== userId;
+  const posts = await PostService.getPostsByUserId(userId, onlyPublic);
+
+  return okRes(null, "Successfully fetched posts.", { posts: posts }, res);
+}
+
 export async function getPost(req: Request, res: Response) {
   const userId = req.user ? req.user.id : null;
   const postId = getParamResourceId(req, "postId")

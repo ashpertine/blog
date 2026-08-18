@@ -21,5 +21,7 @@ postRouter.post('/posts/:postId/comments/:commentId', mandatoryUserAuth, comment
 postRouter.patch('/comments/:commentId', mandatoryUserAuth, commentValidator, handleValidationErrors, CommentController.modifyComment);
 postRouter.delete('/comments/:commentId', mandatoryUserAuth, CommentController.deleteComemnt);
 
+postRouter.get('/profile/:userId/posts', optionalUserAuth, PostController.getPostsByUser);
+
 
 export { postRouter }

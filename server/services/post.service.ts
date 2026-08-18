@@ -38,6 +38,25 @@ export async function createPost(userId: number, title: string | null, content: 
   return newPost;
 }
 
+export async function getPostsByUserId(userId: number, onlyPublic: boolean = true) {
+  const query = {
+    where: {
+      user_id: userId,
+      ...(onlyPublic && {is_public: onlyPublic})
+    },
+    include: {
+      post_user: {
+        select: {
+          username: true
+        }
+      }
+    }
+  }
+  const posts = await prisma.post.findMany(query);
+
+  return posts;
+}
+
 export async function getAllPublicPosts(limit: number | null) {
   const options = {
     where: {

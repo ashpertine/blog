@@ -25,7 +25,7 @@ function BlogPage() {
   if(!postId) setError(new Error("Post ID is not defined!"));
   
   useEffect(() => {
-    getPostByIdApi(Number(postId), authUser ? authUser.jwt : authUser).then(body => {
+    getPostByIdApi(Number(postId), authUser && authUser.jwt ).then(body => {
       const post = body.post as Post;
       setTitle(post.title);
       setContent(post.content);

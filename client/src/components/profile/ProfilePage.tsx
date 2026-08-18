@@ -1,4 +1,5 @@
 import { useAuth } from "../../contexts/AuthContext";
+import BlogList from "../blog/BlogList";
 import NavigationGuard from "../auth/NavigationGuard";
 
 function ProfilePage() {
@@ -18,7 +19,7 @@ function ProfilePage() {
 
   return <NavigationGuard toUrl="/">
     <div className="py-4 mx-2 sm:mx-5 md:mx-10 lg:mx-20">
-      <div className="bg-slate-700 w-full text-slate-100 rounded-sm p-2">
+      <div className="bg-slate-700 mb-2 w-full text-slate-100 rounded-sm p-2">
         <h1 className="text-3xl">Your Profile</h1>
         <hr className="border-slate-500"/>
         <div>
@@ -28,6 +29,9 @@ function ProfilePage() {
             <li>Account Created: {parseDate(authUser.created_date)}</li>
           </ul>
         </div>
+      </div>
+      <div className="bg-slate-700 w-full rounded-sm p-2">
+        <BlogList fromUser={authUser.id} showPublicStatus={true} showListButtons={true}/>
       </div>
     </div>
   </NavigationGuard> 

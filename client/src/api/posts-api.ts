@@ -8,6 +8,10 @@ export function getPostByIdApi(postId: number, userJwt: string | null) {
   return fetchWithAuth("GET", `/api/posts/${postId}`, null, userJwt);
 }
 
+export function getPostsByUserApi(userId: number, userJwt: string | null) {
+  return fetchWithAuth("GET", `/api/profile/${userId}/posts`, null, userJwt);
+}
+
 export function createPostApi(title: string | null, content: string | null, userJwt: string) {
   return fetchWithAuth("POST", `/api/posts`, { title, content }, userJwt);
 }
@@ -17,7 +21,7 @@ export function updatePostApi(postId: number, title: string | null, content: str
 }
 
 export function updatePostStatusApi(postId: number, isPublic: boolean, userJwt: string) {
-  return fetchWithAuth("PATCH", `/api/posts/${postId}`, { "is_public": isPublic }, userJwt);
+  return fetchWithAuth("PATCH", `/api/posts/${postId}/settings`, { "is_public": isPublic }, userJwt);
 }
 
 export function deletePostStatusApi(postId: number, userJwt: string) {
