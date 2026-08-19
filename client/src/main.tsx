@@ -6,6 +6,7 @@ import AuthPage from './components/auth/AuthPage'
 import { AuthProvider } from "./contexts/AuthContext";
 import ProfilePage from './components/profile/ProfilePage'
 import BlogPage from './components/blog/BlogPage'
+import EditorPage from './components/blog-editor/EditorPage'
 
 
 createRoot(document.getElementById('root')!).render(
@@ -18,6 +19,7 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/register" element={<AuthPage isLogin={false} />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/posts/:postId" element={<BlogPage />}></Route>
+          <Route path="/editor" element={<EditorPage />}></Route>
         </Routes>
       </AuthProvider>
     </BrowserRouter>

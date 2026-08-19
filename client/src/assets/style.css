@@ -30,3 +30,9 @@
 @theme {
   --font-app: 'Afacad';
 }
+
+.tiptap {
+  p {
+    @apply my-4 first:mt-0 last:mb-0 text-slate-100 leading-relaxed;
+  }
+}

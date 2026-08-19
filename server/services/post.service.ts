@@ -31,7 +31,6 @@ export async function createPost(userId: number, title: string | null, content: 
       user_id: userModel.obj.id,
       title: title ?? "Untitled Blog",
       content: content ?? "This is the start of your blog.",
-      last_updated_date: new Date() 
     }
   })
 
@@ -42,7 +41,7 @@ export async function getPostsByUserId(userId: number, onlyPublic: boolean = tru
   const query = {
     where: {
       user_id: userId,
-      ...(onlyPublic && {is_public: onlyPublic})
+      ...(onlyPublic && { is_public: onlyPublic })
     },
     include: {
       post_user: {
@@ -70,7 +69,7 @@ export async function getAllPublicPosts(limit: number | null) {
       }
     }
   }
-  const posts = limit ? await prisma.post.findMany({...options, take: limit}) : await prisma.post.findMany(options)
+  const posts = limit ? await prisma.post.findMany({ ...options, take: limit }) : await prisma.post.findMany(options)
 
   return posts;
 }
