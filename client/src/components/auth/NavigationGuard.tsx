@@ -8,14 +8,14 @@ type NavigationGuardProps = {
 }
 
 function NavigationGuard({ inverse = false, toUrl = "/login", children }: NavigationGuardProps) {
-  const { loggedIn, loading } = useAuth();
+  const { authUser, loading } = useAuth();
 
-  if (loading) return <div>LOADING</div>
+  if (loading) return <div>Loading</div>
 
   if (inverse) { // redirect to a url when going to an unprotected route
-    return loggedIn ? <Navigate to={toUrl} replace /> : <>{children}</>;
+    return authUser !== null ? <Navigate to={toUrl} replace /> : <>{children}</>;
   } else { //redirect o a url when going to a protected route
-    return loggedIn ? <>{children}</> : <Navigate to={toUrl} replace />;
+    return authUser !== null ? <>{children}</> : <Navigate to={toUrl} replace />;
   }
 }
 

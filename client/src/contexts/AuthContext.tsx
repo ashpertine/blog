@@ -17,8 +17,6 @@ type AuthUser = {
 type AuthContextType = {
   authUser: AuthUser | null,
   setAuthUser: React.Dispatch<React.SetStateAction<AuthUser | null>>,
-  loggedIn: boolean,
-  setLoggedIn: React.Dispatch<React.SetStateAction<boolean>>,
   loading: boolean,
   setLoading: React.Dispatch<React.SetStateAction<boolean>>,
   login: (username: string, password: string) => void,
@@ -39,7 +37,6 @@ const AuthContext = createContext<AuthContextType | null>(null);
 
 function AuthProvider({ children }: { children: ReactNode }) {
   const [authUser, setAuthUser] = useState<AuthUser | null>(null);
-  const [loggedIn, setLoggedIn] = useState(false);
   const [loading, setLoading] = useState(true);
 
   async function login(username: string, password: string) {
@@ -49,14 +46,12 @@ function AuthProvider({ children }: { children: ReactNode }) {
     localStorage.setItem(TOKEN_NAME, jwt);
 
     const { user } = await getProfileApi(jwt) as { user: AuthUser };
-    setAuthUser(user);
-    setLoggedIn(true);
+    setAuthUser({ ...user, jwt });
   }
 
   async function logout() {
     localStorage.removeItem(TOKEN_NAME);
     setAuthUser(null);
-    setLoggedIn(false);
   }
 
   function hasPermission(permission: string): boolean {
@@ -74,7 +69,6 @@ function AuthProvider({ children }: { children: ReactNode }) {
     getProfileApi(jwt).then(body => {
       const user = body.user as AuthUser;
       setAuthUser({ ...user, jwt });
-      setLoggedIn(true);
       setLoading(false);
       return;
     }).catch(error => {
@@ -90,8 +84,6 @@ function AuthProvider({ children }: { children: ReactNode }) {
   const value = {
     authUser,
     setAuthUser,
-    loggedIn,
-    setLoggedIn,
     loading,
     setLoading,
     login,

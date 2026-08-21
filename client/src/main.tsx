@@ -19,7 +19,7 @@ createRoot(document.getElementById('root')!).render(
           <Route path="/register" element={<AuthPage isLogin={false} />} />
           <Route path="/profile" element={<ProfilePage />} />
           <Route path="/posts/:postId" element={<BlogPage />}></Route>
-          <Route path="/editor" element={<EditorPage />}></Route>
+          <Route path="/edit/:postId" element={<EditorPage />}></Route>
         </Routes>
       </AuthProvider>
     </BrowserRouter>

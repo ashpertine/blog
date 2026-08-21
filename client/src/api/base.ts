@@ -33,10 +33,11 @@ export function fetchWithAuth(method: AppHttpMethod, url: string, data: Record<s
       ...(jwt !== null && { "Authorization": `Bearer ${jwt}` })
     }
   }).then((response) => {
-    if (response.status >= 400) {
-      throw new FetchError(response, null);
-    }
     return response.json().then(body => {
+      if (response.status >= 400 && typeof body.success === undefined) {
+        throw new FetchError(response, null);
+      }
+
       if (!body.success) throw new FetchError(response, body);
       return body;
     })

@@ -3,7 +3,8 @@ import * as PostsApi from "../../api/posts-api";
 import ErrorBox from "../ErrorBox";
 import { useAuth } from "../../contexts/AuthContext";
 import BlogListItem from "./BlogListItem";
-import { updatePostStatusApi } from "../../api/posts-api";
+import { updatePostStatusApi, deletePostApi } from "../../api/posts-api";
+import { useNavigate } from "react-router";
 
 export type Post = {
   id: number,
@@ -20,18 +21,19 @@ export type Post = {
 
 type BlogListProps = {
   fromUser?: number
-  showPublicStatus?: boolean
   showListButtons?: boolean
 }
 
-function BlogList({ fromUser, showPublicStatus = false, showListButtons = false }: BlogListProps) {
+function BlogList({ fromUser, showListButtons = false }: BlogListProps) {
   const { authUser, hasPermission } = useAuth();
   const [posts, setPosts] = useState<Post[]>([]);
   const [error, setError] = useState<Error | null>(null);
   const [isLoading, setLoading] = useState(true);
+  const navigate = useNavigate();
+  const canUpdate = hasPermission("modifyOwnPost");
 
   function getPosts() {
-    if(!fromUser) {
+    if (!fromUser) {
       PostsApi.getAllPostsApi().then(body => {
         setPosts(body.posts)
       }).catch(error => {
@@ -41,7 +43,7 @@ function BlogList({ fromUser, showPublicStatus = false, showListButtons = false 
       })
       return;
     }
-    
+
     PostsApi.getPostsByUserApi(fromUser, authUser && authUser.jwt).then(body => {
       setPosts(body.posts)
     }).catch(error => {
@@ -57,14 +59,31 @@ function BlogList({ fromUser, showPublicStatus = false, showListButtons = false 
   }, [fromUser, authUser]);
 
   function togglePublicStatus(post: Post) {
-    if(!hasPermission("modifyOwnPost")) return;
-    
+    if (!canUpdate) return;
+
     setLoading(true);
     updatePostStatusApi(post.id, !post.is_public, authUser!.jwt).then(() => getPosts()).catch(error => {
       setError(error as Error);
     }).finally(() => {
       setLoading(false);
     })
+  }
+
+  function deletePost(postId: number) {
+    if (!canUpdate) return;
+
+    setLoading(true);
+    deletePostApi(postId, authUser!.jwt).then(() => getPosts()).catch(error => {
+      setError(error as Error);
+    }).finally(() => {
+      setLoading(false);
+    })
+  }
+
+  function goToEditPage(postId: number) {
+    if (!canUpdate) return;
+
+    return navigate(`/edit/${postId}`);
   }
 
   if (isLoading) return <div>
@@ -77,7 +96,15 @@ function BlogList({ fromUser, showPublicStatus = false, showListButtons = false 
 
   return <div className="flex flex-wrap gap-4">
     {posts.map(post => {
-      return <BlogListItem key={`blog-post-${post.id}`} post={post} showPublicStatus={showPublicStatus} showButtons={showListButtons} togglePublicStatus={togglePublicStatus}/>
+      return <BlogListItem key={`blog-post-${post.id}`}
+        post={post}
+        showButtons={showListButtons}
+        canUpdate={canUpdate}
+        showPublicStatus={canUpdate}
+        togglePublicStatus={togglePublicStatus}
+        goToEditPage={goToEditPage}
+        deletePost={deletePost}
+      />
     })}
   </div>
 }

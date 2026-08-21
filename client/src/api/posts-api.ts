@@ -24,7 +24,7 @@ export function updatePostStatusApi(postId: number, isPublic: boolean, userJwt: 
   return fetchWithAuth("PATCH", `/api/posts/${postId}/settings`, { "is_public": isPublic }, userJwt);
 }
 
-export function deletePostStatusApi(postId: number, userJwt: string) {
+export function deletePostApi(postId: number, userJwt: string) {
   return fetchWithAuth("DELETE", `/api/posts/${postId}`, null, userJwt);
 }
 

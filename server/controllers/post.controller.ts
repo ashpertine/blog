@@ -9,6 +9,8 @@ export function getParamResourceId(req: Request, name: string) {
   const resourceId = req.params[name];
   if (!resourceId) throw AppError.badRequest(`${name} is not defined`);
 
+  if (isNaN(Number(resourceId))) throw AppError.badRequest(`An invalid ${name} was given.`)
+
   return Number(resourceId);
 }
 
