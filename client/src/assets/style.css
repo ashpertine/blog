@@ -33,6 +33,50 @@
 
 .tiptap {
   p {
-    @apply my-4 first:mt-0 last:mb-0 text-slate-100 leading-relaxed;
+    @apply first:mt-0 last:mb-0 text-slate-100 leading-relaxed;
   }
+
+  h1 {
+    @apply text-3xl;
+  }
+
+  h2 {
+    @apply text-2xl;
+  }
+
+  h3 {
+    @apply text-xl;
+  }
+
+  h4 {
+    @apply text-lg;
+  }
+
+  ol {
+    @apply list-decimal;
+  }
+
+  ul {
+    @apply list-disc;
+  }
+
+  ol,
+  ul {
+    @apply list-outside ml-4; 
+  }
+
+  li > p {
+    @apply inline;
+  }
+
+  pre {
+    @apply bg-slate-600 m-2;
+  }
+
+  blockquote {
+    @apply border-spacing-2 border-slate-400 border-l-2 pl-2 ml-2;
+  }
+
+
+  @apply text-slate-100 bg-slate-700 outline-none;
 }

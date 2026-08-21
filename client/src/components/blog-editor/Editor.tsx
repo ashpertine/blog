@@ -1,18 +1,21 @@
 import { useEditor, EditorContent } from "@tiptap/react";
-import { FloatingMenu, BubbleMenu } from '@tiptap/react/menus'
 import StarterKit from '@tiptap/starter-kit'
+import EditorMenuBar from "./EditorMenuBar";
 
 function Editor() {
   const editor = useEditor({
-    extensions: [StarterKit],
-    content: "<p>Hello World</p>"
+    extensions: [StarterKit.configure({
+      heading: {
+        levels: [1, 2, 3, 4]
+      }
+    })],
+    content: "<p>Hello World</p>",
   });
 
   return (
     <>
+      <EditorMenuBar editor={editor} />
       <EditorContent editor={editor} />
-      <FloatingMenu editor={editor}>This is the floating menu</FloatingMenu>
-      <BubbleMenu editor={editor}>This is the bubble menu</BubbleMenu>
     </>
   )
 }
