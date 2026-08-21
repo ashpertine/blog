@@ -31,15 +31,11 @@ export function menuBarStateSelector(ctx: EditorStateSnapshot<Editor>) {
     isOrderedList: ctx.editor.isActive('orderedList') ?? false,
     isCodeBlock: ctx.editor.isActive('codeBlock') ?? false,
     isBlockquote: ctx.editor.isActive('blockquote') ?? false,
-
-    // History
-    canUndo: ctx.editor.can().chain().undo().run() ?? false,
-    canRedo: ctx.editor.can().chain().redo().run() ?? false,
   }
 }
 
 function EditorMenuBar({ editor }: { editor: Editor | null }) {
-  const buttonStyle = 'p-2 bg-blue-500 text-slate-100 hover:bg-blue-600 cursor-pointer disabled:bg-blue-400';
+  const buttonStyle = 'min-w-fit p-[4px] flex-1 bg-blue-500 rounded-sm text-slate-100 hover:bg-blue-600 cursor-pointer disabled:bg-blue-400 border-1 border-blue-600';
   const editorState = useEditorState({
     editor: editor as Editor,
     selector: menuBarStateSelector,
@@ -48,7 +44,27 @@ function EditorMenuBar({ editor }: { editor: Editor | null }) {
   if (!editor) return null
 
   return <div className="control-group">
-    <div className="button-group">
+    <div className="button-group flex flex-column gap-1 p-2 overflow-scroll">
+            <button
+        onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+        className={`${editorState.isHeading1 ? 'is-active' : ''} ${buttonStyle}`}
+      >H1</button>
+
+      <button
+        onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+        className={`${editorState.isHeading2 ? 'is-active' : ''} ${buttonStyle}`}
+      >H2</button>
+
+      <button
+        onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+        className={`${editorState.isHeading2 ? 'is-active' : ''} ${buttonStyle}`}
+      >H3</button>
+
+      <button
+        onClick={() => editor.chain().focus().toggleHeading({ level: 4 }).run()}
+        className={`${editorState.isHeading4 ? 'is-active' : ''} ${buttonStyle}`}
+      >H4</button>
+
       <button
         onClick={() => editor.chain().focus().toggleBold().run()}
         disabled={!editorState.canBold}
@@ -77,26 +93,6 @@ function EditorMenuBar({ editor }: { editor: Editor | null }) {
         onClick={() => editor.chain().focus().unsetAllMarks().run()}
         className={buttonStyle}
       >Clear Formatting</button>
-
-      <button
-        onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
-        className={`${editorState.isHeading1 ? 'is-active' : ''} ${buttonStyle}`}
-      >H1</button>
-
-      <button
-        onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
-        className={`${editorState.isHeading2 ? 'is-active' : ''} ${buttonStyle}`}
-      >H2</button>
-
-      <button
-        onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
-        className={`${editorState.isHeading2 ? 'is-active' : ''} ${buttonStyle}`}
-      >H3</button>
-
-      <button
-        onClick={() => editor.chain().focus().toggleHeading({ level: 4 }).run()}
-        className={`${editorState.isHeading4 ? 'is-active' : ''} ${buttonStyle}`}
-      >H4</button>
 
       <button
         onClick={() => editor.chain().focus().toggleBulletList().run()}

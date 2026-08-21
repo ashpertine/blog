@@ -13,6 +13,7 @@
     "@floating-ui/dom": "^1.8.0",
     "@tailwindcss/vite": "^4.3.3",
     "@tiptap/extension-bubble-menu": "^3.30.2",
+    "@tiptap/extensions": "^3.30.2",
     "@tiptap/pm": "^3.30.2",
     "@tiptap/react": "^3.30.2",
     "@tiptap/starter-kit": "^3.30.2",

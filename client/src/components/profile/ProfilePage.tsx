@@ -30,6 +30,9 @@ function ProfilePage() {
           </ul>
         </div>
       </div>
+      <div className="profile-btn-group mb-2 flex justify-end">
+        <button className="bg-green-700 rounded-sm p-2 text-slate-100 cursor-pointer hover:bg-green-800 ">New Post</button>
+      </div>
       <div className="bg-slate-700 w-full rounded-sm p-2">
         <BlogList fromUser={authUser.id} showPublicStatus={true} showListButtons={true}/>
       </div>

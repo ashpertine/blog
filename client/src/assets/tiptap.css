@@ -1,0 +1,56 @@
+@import "tailwindcss";
+.tiptap {
+  p {
+    @apply first:mt-0 last:mb-0 text-slate-100 leading-relaxed;
+  }
+
+  h1 {
+    @apply text-3xl font-bold;
+  }
+
+  h2 {
+    @apply text-2xl font-bold;
+  }
+
+  h3 {
+    @apply text-xl font-bold;
+  }
+
+  h4 {
+    @apply text-lg font-bold;
+  }
+
+  ol {
+    @apply list-decimal;
+  }
+
+  ul {
+    @apply list-disc;
+  }
+
+  ol,
+  ul {
+    @apply list-outside ml-4; 
+  }
+
+  li > p {
+    @apply inline;
+  }
+
+  pre {
+    @apply bg-slate-600 m-2;
+  }
+
+  blockquote {
+    @apply border-spacing-2 border-slate-400 border-l-2 pl-2 ml-2;
+  }
+
+  p.is-editor-empty:first-child::before {
+  @apply text-slate-400 float-left h-0 pointer-events-none;
+  content: attr(data-placeholder);
+}
+
+
+
+  @apply text-slate-100 p-2 outline-none;
+}
