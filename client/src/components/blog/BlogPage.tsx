@@ -3,16 +3,7 @@ import { useState, useEffect } from "react";
 import { getPostByIdApi } from "../../api/posts-api";
 import { useParams } from "react-router";
 import ErrorBox from "../ErrorBox";
-
-type Post = {
-  id: number,
-  user_id: number | null,
-  title: string,
-  content: string,
-  is_public: boolean,
-  published_date: string,
-  last_updated_date: string
-}
+import type { Post } from "../../types/post.ts";
 
 function BlogPage() {
   const { authUser } = useAuth();
