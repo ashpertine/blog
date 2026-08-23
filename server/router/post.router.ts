@@ -1,7 +1,7 @@
 import { Router } from "express";
 import * as PostController from "../controllers/post.controller.ts";
 import * as CommentController from "../controllers/comment.controller.ts";
-import { passport, optionalUserAuth } from "../config/passport.ts";
+import { optionalUserAuth } from "../config/passport.ts";
 import { mandatoryUserAuth } from "../config/passport.ts";
 import { commentValidator } from "../middleware/validator/comment-validator.ts";
 import { handleValidationErrors } from "../middleware/error-validator.ts";
@@ -18,8 +18,11 @@ postRouter.delete('/posts/:postId', mandatoryUserAuth, PostController.handlePost
 postRouter.get('/posts/:postId/comments', optionalUserAuth, CommentController.getCommentsByPostId);
 postRouter.post('/posts/:postId/comments', mandatoryUserAuth, commentValidator, handleValidationErrors, CommentController.createNewComment);
 postRouter.post('/posts/:postId/comments/:commentId', mandatoryUserAuth, commentValidator, handleValidationErrors, CommentController.createNewReply);
+
 postRouter.patch('/comments/:commentId', mandatoryUserAuth, commentValidator, handleValidationErrors, CommentController.modifyComment);
 postRouter.delete('/comments/:commentId', mandatoryUserAuth, CommentController.deleteComemnt);
+postRouter.post('/comments/:commentId/like', mandatoryUserAuth, CommentController.likeComment);
+postRouter.delete('/comments/:commentId/like', mandatoryUserAuth, CommentController.unlikeComment);
 
 postRouter.get('/profile/:userId/posts', optionalUserAuth, PostController.getPostsByUser);
 

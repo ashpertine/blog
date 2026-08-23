@@ -56,7 +56,7 @@ export async function createComment(userId: number, postId: number, parentCommen
 export async function modifyComment(userId: number, commentId: number, content: string) {
   const userModel = await UserModel.initUser(userId);
   if (!userModel.hasPermission("createComment")) throw AppError.forbidden("You do not have permission to create a comment.");
-  
+
   try {
     const modifiedComment = await prisma.comment.update({
       data: {
@@ -77,6 +77,38 @@ export async function modifyComment(userId: number, commentId: number, content: 
     throw error;
   }
 }
+
+export async function likeActionComment(unlike: boolean, userId: number, commentId: number) {
+  if (!unlike) {
+    await prisma.commentLikes.create({
+      data: {
+        user_id: userId,
+        comment_id: commentId
+      }
+    })
+  } else {
+    await prisma.commentLikes.delete({
+      where: {
+        user_id_comment_id: {
+          user_id: userId,
+          comment_id: commentId
+        }
+      }
+    });
+  }
+
+  const comment = await prisma.comment.update({
+    data: {
+      likes: !unlike ? { increment: 1 } : { decrement: 1 }
+    },
+    where: {
+      id: commentId
+    }
+  });
+
+  return comment;
+}
+
 
 export async function deleteComment(userId: number, commentId: number) {
   try {

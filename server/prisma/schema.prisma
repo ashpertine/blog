@@ -23,6 +23,7 @@ model User {
 
   user_posts    Post[]
   user_comments Comment[]
+  comment_likes CommentLikes[]
 }
 
 model Post {
@@ -39,6 +40,16 @@ model Post {
   post_comments Comment[]
 }
 
+model CommentLikes {
+  user_id    Int
+  comment_id Int
+
+  user_likes    User?    @relation(fields: [user_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  comment_likes Comment? @relation(fields: [comment_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@id([user_id, comment_id])
+}
+
 model Comment {
   id                Int      @id @default(autoincrement())
   user_id           Int?
@@ -48,8 +59,9 @@ model Comment {
   parent_comment_id Int?
   created_date      DateTime @default(now())
 
-  comment_user   User?     @relation(fields: [user_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
-  comment_post   Post      @relation(fields: [post_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
-  parent_comment Comment?  @relation("ParentChildrenComment", fields: [parent_comment_id], references: [id])
-  child_comment  Comment[] @relation("ParentChildrenComment")
+  comment_user   User?          @relation(fields: [user_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
+  comment_post   Post           @relation(fields: [post_id], references: [id], onDelete: Cascade, onUpdate: Cascade)
+  parent_comment Comment?       @relation("ParentChildrenComment", fields: [parent_comment_id], references: [id])
+  child_comment  Comment[]      @relation("ParentChildrenComment")
+  comment_likes  CommentLikes[]
 }

@@ -51,5 +51,20 @@ export async function deleteComemnt(req: Request, res: Response) {
   return okRes(null, "Successfully deleted comment.", { comment: comment }, res);
 }
 
+async function likeCommentCommon(req: Request, res: Response, unlike: boolean) {
+  const userId = req.user!.id;
+  const commentId = getParamResourceId(req, "commentId");
+
+  const comment = await CommentService.likeActionComment(unlike, userId, commentId);
+  return okRes(null, "Successfully deleted comment.", { comment: comment }, res);
+}
+
+export async function likeComment(req: Request, res: Response) {
+  await likeCommentCommon(req, res, false);
+}
+
+export async function unlikeComment(req: Request, res: Response) {
+  await likeCommentCommon(req, res, true);
+}
 
 
