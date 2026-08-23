@@ -1,5 +1,5 @@
 @import "tailwindcss";
-@import "./tiptap.css";
+@plugin "@tailwindcss/typography";
 
 /* afacad-regular - latin */
 @font-face {

@@ -7,8 +7,7 @@ import type { Post } from "../../types/post.ts";
 
 function BlogPage() {
   const { authUser } = useAuth();
-  const [title, setTitle] = useState("");
-  const [content, setContent] = useState("");
+  const [post, setPost] = useState<Post | null>(null);
   const [error, setError] = useState<Error | null>(null);
   const [isLoading, setLoading] = useState(true);
   const { postId } = useParams();
@@ -18,8 +17,7 @@ function BlogPage() {
   useEffect(() => {
     getPostByIdApi(Number(postId), authUser && authUser.jwt).then(body => {
       const post = body.post as Post;
-      setTitle(post.title);
-      setContent(post.content);
+      setPost(post);
     }).catch(e => {
       setError(e as Error);
     }).finally(() => setLoading(false))
@@ -33,10 +31,13 @@ function BlogPage() {
     return <ErrorBox message={(error as Error).message} details={null} />
   }
 
-  return <div className="text-slate-100 m-4">
-    <h1 className="text-5xl">{title}</h1>
-    <p className="text-lg">{content}</p>
-  </div>
+  return post ? <div className="text-slate-100 m-4 flex flex-col items-center">
+    <div className="prose lg:prose-xl md:prose-base prose-slate prose-invert">
+      <h1 className="text-5xl">{post.title}</h1>
+      <p>By: {post.post_user.username}</p>
+      <div dangerouslySetInnerHTML={{ __html: post.content }}></div>
+    </div>
+  </div> : null;
 }
 
 export default BlogPage;

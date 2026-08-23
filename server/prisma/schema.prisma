@@ -33,6 +33,7 @@ model Post {
   is_public         Boolean   @default(false)
   published_date    DateTime?
   last_updated_date DateTime  @default(now())
+  created_date      DateTime  @default(now())
 
   post_user     User?     @relation(fields: [user_id], references: [id], onDelete: SetNull, onUpdate: Cascade)
   post_comments Comment[]

@@ -11,17 +11,21 @@ function Editor({ content, setContent }: { content: string, setContent: (content
       heading: {
         levels: [1, 2, 3, 4]
       },
+      undoRedo: false,
     }),
     Placeholder.configure({
       placeholder: "Write something..."
     })
     ],
-    content: content
   });
 
   useEffect(() => {
-    if (editor.getHTML().trim() === content.trim()) return;
-    editor.commands.setContent(content);
+    console.log("asdf");
+    if (!editor) return;
+    if (content === editor.getHTML()) {
+      console.log("hi");
+      editor.commands.setContent(content);
+    }
   }, [content, editor]);
 
   editor.on("update", ({ editor }) => {

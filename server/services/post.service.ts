@@ -2,6 +2,7 @@ import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 import { prisma } from "../lib/prisma.ts";
 import { AppError } from "../utils/errors.ts";
 import { UserModel } from "../models/user.ts";
+import { SortOrder } from "../generated/prisma/internal/prismaNamespace.ts";
 
 async function checkAndGetUserPost(userId: number, postId: number) {
   const userModel = await UserModel.initUser(userId);
@@ -38,7 +39,7 @@ export async function createPost(userId: number, title: string | null, content: 
 }
 
 export async function getPostsByUserId(userId: number, onlyPublic: boolean = true) {
-  const query = {
+  const posts = await prisma.post.findMany({
     where: {
       user_id: userId,
       ...(onlyPublic && { is_public: onlyPublic })
@@ -49,9 +50,12 @@ export async function getPostsByUserId(userId: number, onlyPublic: boolean = tru
           username: true
         }
       }
+    },
+    orderBy: {
+      created_date: "desc"
     }
   }
-  const posts = await prisma.post.findMany(query);
+  );
 
   return posts;
 }
@@ -67,6 +71,9 @@ export async function getAllPublicPosts(limit: number | null) {
           username: true
         }
       }
+    },
+    orderBy: {
+      last_updated_date: "desc" as SortOrder
     }
   }
   const posts = limit ? await prisma.post.findMany({ ...options, take: limit }) : await prisma.post.findMany(options)
@@ -78,6 +85,13 @@ export async function getPost(userId: number | null, postId: number) {
   const post = await prisma.post.findFirst({
     where: {
       id: postId
+    },
+    include: {
+      post_user: {
+        select: {
+          username: true
+        }
+      }
     }
   });
 
