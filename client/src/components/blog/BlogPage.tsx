@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import { getPostByIdApi } from "../../api/posts-api";
 import { useParams } from "react-router";
 import ErrorBox from "../ErrorBox";
+import CommentList from "../comments/CommentList.tsx";
 import type { Post } from "../../types/post.ts";
 
 function BlogPage() {
@@ -31,11 +32,15 @@ function BlogPage() {
     return <ErrorBox message={(error as Error).message} details={null} />
   }
 
-  return post ? <div className="text-slate-100 m-4 flex flex-col items-center">
-    <div className="prose lg:prose-xl md:prose-base prose-slate prose-invert">
+  return post ? <div className="text-slate-100 flex flex-col items-center  py-4 mx-2 sm:mx-5 md:mx-20 lg:mx-40 xl:mx-72">
+    <div className="prose lg:prose-xl md:prose-base prose-slate prose-invert max-w-none">
       <h1 className="text-5xl">{post.title}</h1>
       <p>By: {post.post_user.username}</p>
       <div dangerouslySetInnerHTML={{ __html: post.content }}></div>
+    </div>
+    <div className="max-w-none w-[100%]">
+      <h1 className="font-bold text-xl">Comments</h1>
+      <CommentList />
     </div>
   </div> : null;
 }
