@@ -6,6 +6,16 @@ import { useNavigate } from "react-router";
 import { createPostApi } from "../../api/posts-api.ts";
 import { useState, useEffect } from "react";
 
+export function parseDate(dateString: string) {
+  const date = new Date(dateString);
+
+  return date.toLocaleDateString('en-GB', {
+    day: '2-digit',
+    month: '2-digit',
+    year: 'numeric'
+  });
+}
+
 function ProfilePage() {
   const { authUser } = useAuth();
   const [error, setError] = useState<Error | null>(null);
@@ -13,16 +23,6 @@ function ProfilePage() {
 
   if (error) {
     return <ErrorBox message={(error as Error).message} details={null} />
-  }
-
-  function parseDate(dateString: string) {
-    const date = new Date(dateString);
-
-    return date.toLocaleDateString('en-GB', {
-      day: '2-digit',
-      month: '2-digit',
-      year: 'numeric'
-    });
   }
 
   function createNewPost() {

@@ -28,8 +28,8 @@ export function deletePostApi(postId: number, userJwt: string) {
   return fetchWithAuth("DELETE", `/api/posts/${postId}`, null, userJwt);
 }
 
-export function getPostCommentsApi(postId: number) {
-  return fetchWithAuth("GET", `/api/posts/${postId}/comments`, null, null);
+export function getPostCommentsApi(postId: number, userJwt: string | null) {
+  return fetchWithAuth("GET", `/api/posts/${postId}/comments`, null, userJwt);
 }
 
 export function createCommentApi(postId: number, parentCommentId: number | null, content: string, userJwt: string) {

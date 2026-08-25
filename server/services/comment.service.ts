@@ -10,6 +10,13 @@ export async function getCommentsByPost(userId: number | null, postId: number) {
   const comments = await prisma.comment.findMany({
     where: {
       post_id: post.id
+    }, 
+    include: {
+      comment_user: {
+        select: {
+          username: true
+        }
+      }
     }
   })
 
@@ -20,6 +27,13 @@ export async function getComment(commentId: number) {
   const comment = await prisma.comment.findFirst({
     where: {
       id: commentId
+    },
+    include: {
+      comment_user: {
+        select: {
+          username: true
+        }
+      }
     }
   })
 
