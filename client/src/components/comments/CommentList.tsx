@@ -117,7 +117,7 @@ function CommentList() {
 
   return comments.isEmpty ? <div>
     <h1 className="font-bold text-xl">Comments <span className="text-slate-400">({comments.getLength()})</span></h1>
-    {comments.toHTML(authUser!.id)}
+    {comments.toHTML(authUser && authUser.id)}
   </div> : <div>
     <h1 className="text-slate-400 font-bold text-2xl">No comments</h1>
   </div> 
