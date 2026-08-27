@@ -30,4 +30,19 @@
 
 @theme {
   --font-app: 'Afacad';
+
+  --animate-slide-from-top: slide-from-top 0.2s ease-out;
+
+  @keyframes slide-from-top {
+    0% {
+      transform: translate(0, -8px);
+      opacity: 0.5;
+    } 75% {
+      transform: translate(0, -2px);
+      opacity: 0.8;
+    } 100% {
+      transform: translate(0);
+      opacity: 1;
+    }
+  }
 }

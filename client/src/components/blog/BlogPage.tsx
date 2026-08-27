@@ -33,14 +33,16 @@ function BlogPage() {
     return <ErrorBox message={(error as Error).message} details={null} />
   }
 
-  return post ? <div className="text-slate-100 flex flex-col gap-2 items-center  py-4 mx-2 sm:mx-5 md:mx-20 lg:mx-40 xl:mx-72">
-    <div className="prose lg:prose-xl md:prose-base prose-slate prose-invert max-w-none w-[100%]">
-      <h1 className="text-5xl">{post.title}</h1>
-      <p>By: {post.post_user.username}</p>
-      <div dangerouslySetInnerHTML={{ __html: post.content }}></div>
-    </div>
-    <div className="max-w-none w-[100%]">
-      <CommentList />
+  return post ? <div className="text-slate-100 flex flex-col gap-2 items-center mx-2 sm:mx-5 md:mx-20 lg:mx-40 xl:mx-72">
+    <div className="mt-6 w-full">
+      <div className="prose mt-8 lg:prose-xl md:prose-base prose-slate prose-invert max-w-none w-full">
+        <h1 className="text-5xl">{post.title}</h1>
+        <p>By: {post.post_user.username}</p>
+        <div dangerouslySetInnerHTML={{ __html: post.content }}></div>
+      </div>
+      <div className="max-w-none w-full mb-6 bg-slate-900 p-4 rounded-lg">
+        <CommentList />
+      </div>
     </div>
   </div> : null;
 }

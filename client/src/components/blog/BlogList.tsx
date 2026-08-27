@@ -94,7 +94,7 @@ function BlogList({ fromUser, showListButtons = false }: BlogListProps) {
     return <ErrorBox message={(error as Error).message} details={null} />
   }
 
-  return <div className="flex flex-wrap gap-4">
+  return posts.length > 0 ? <div className="flex flex-wrap gap-4">
     {posts.map(post => {
       return <BlogListItem key={`blog-post-${post.id}`}
         post={post}
@@ -106,7 +106,9 @@ function BlogList({ fromUser, showListButtons = false }: BlogListProps) {
         deletePost={deletePost}
       />
     })}
-  </div>
+  </div> : <div className="flex justify-center">
+    <p className="text-lg text-slate-400">No posts available.</p>
+  </div>;
 }
 
 export default BlogList;

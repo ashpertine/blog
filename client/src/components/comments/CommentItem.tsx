@@ -1,6 +1,9 @@
 import type { Comment } from "./CommentList";
 import { parseDate } from "../profile/ProfilePage";
-function CommentItem({ comment, userId }: { comment: Comment, userId: number | null }) {
+import { useAuth } from "../../contexts/AuthContext";
+function CommentItem({ comment, userId, showCommentPopup }: { comment: Comment, userId: number | null, showCommentPopup: (replyCommentId: number | null) => unknown}) {
+    const { hasPermission } = useAuth();
+    const showReply = hasPermission("createComment");
     return (
         <div className="flex gap-3 py-4">
             <div className="min-w-0 flex-1">
@@ -28,9 +31,9 @@ function CommentItem({ comment, userId }: { comment: Comment, userId: number | n
                         {comment.likes} {comment.likes === 1 ? "like" : "likes"}
                     </span>
 
-                    <button className="text-sm font-medium text-slate-400 hover:text-slate-200 cursor-pointer">
+                    {showReply ? <button className="text-sm font-medium text-slate-400 hover:text-slate-200 cursor-pointer" onClick={() => showCommentPopup(comment.id)}>
                         Reply
-                    </button>
+                    </button> : null}
                 </div>
             </div>
         </div>

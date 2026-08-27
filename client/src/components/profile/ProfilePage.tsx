@@ -17,7 +17,7 @@ export function parseDate(dateString: string) {
 }
 
 function ProfilePage() {
-  const { authUser } = useAuth();
+  const { authUser, hasPermission } = useAuth();
   const [error, setError] = useState<Error | null>(null);
   const navigate = useNavigate();
 
@@ -54,9 +54,10 @@ function ProfilePage() {
           </div>
         </div>
         <div className="profile-btn-group mb-2 flex justify-end">
-          <button className="bg-green-700 rounded-sm p-2 text-slate-100 cursor-pointer hover:bg-green-800" onClick={createNewPost}>New Post</button>
+          {hasPermission("createPost") ? <button className="bg-green-700 rounded-sm p-2 text-slate-100 cursor-pointer hover:bg-green-800" onClick={createNewPost}>New Post</button> : null};
         </div>
-        <div className="bg-slate-700 w-full rounded-sm p-2">
+        <div className="bg-slate-700 text-slate-100 w-full rounded-sm p-2">
+          <h1 className="text-3xl">Your Posts</h1>
           <BlogList fromUser={authUser.id} showListButtons={true} />
         </div>
       </div>

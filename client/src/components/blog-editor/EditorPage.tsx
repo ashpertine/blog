@@ -1,5 +1,5 @@
 import Editor from "./Editor.tsx";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useParams } from "react-router";
 import { getPostByIdApi } from "../../api/posts-api.ts";
 import { useAuth } from "../../contexts/AuthContext.tsx";
@@ -29,13 +29,14 @@ class Debounce {
 
 function EditorPage() {
   const { postId } = useParams();
-  const { authUser, loading } = useAuth();
+  const { authUser, loading: authLoading } = useAuth();
   const [title, setTitle] = useState("");
   const [content, setContent] = useState("");
   const [error, setError] = useState<Error | null>(null);
+  const serverContentRef = useRef<{title: string, content: string} | null>(null);
 
   useEffect(() => {
-    if (!loading) {
+    if (!authLoading) {
       getPostByIdApi(Number(postId), authUser && authUser.jwt).then(body => {
         const post = body.post as Post;
         if (!authUser || authUser.id !== post.user_id) {
@@ -43,21 +44,25 @@ function EditorPage() {
         }
         setTitle(post.title);
         setContent(post.content);
+        serverContentRef.current = { title: post.title, content: post.content };
       }).catch(e => {
         setError(e as Error);
       })
     }
-  }, [loading])
+  }, [authLoading])
 
   useEffect(() => {
-    const delay = new Debounce(500);
+    if(serverContentRef.current === null) return;
+    if(serverContentRef.current.title === title && serverContentRef.current.content === content) return;
+
+    const delay = new Debounce(200);
     delay.set(updatePost);
 
     return () => delay.cancel();
   }, [title, content]);
 
 
-  if (loading) return <div>
+  if (authLoading) return <div>
     <h1 className="text-gray-100">Loading</h1>
   </div>
 
