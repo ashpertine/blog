@@ -10,11 +10,16 @@ export async function getCommentsByPost(userId: number | null, postId: number) {
   const comments = await prisma.comment.findMany({
     where: {
       post_id: post.id
-    }, 
+    },
     include: {
       comment_user: {
         select: {
           username: true
+        }
+      },
+      comment_likes: {
+        select: {
+          user_id: true
         }
       }
     }

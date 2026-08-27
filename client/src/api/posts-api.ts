@@ -41,3 +41,11 @@ export function updateCommentApi(commentId: number, content: string, userJwt: st
   return fetchWithAuth("PATCH", `/api/comments/${commentId}`, { content }, userJwt);
 }
 
+export function likeCommentApi(commentId: number, userJwt: string) {
+  return fetchWithAuth("POST", `/api/comments/${commentId}/like`, null, userJwt);
+}
+
+export function unlikeCommentApi(commentId: number, userJwt: string) {
+  return fetchWithAuth("DELETE", `/api/comments/${commentId}/like`, null, userJwt);
+}
+
