@@ -50,6 +50,7 @@ function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   async function logout() {
+    console.log('logout');
     localStorage.removeItem(TOKEN_NAME);
     setAuthUser(null);
   }

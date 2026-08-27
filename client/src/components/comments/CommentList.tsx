@@ -30,36 +30,36 @@ class CommentThread {
   }
 
   setChild(commentThread: CommentThread): void {
-    if(!commentThread.comment) return;
-    
-    if(this.comment === null && commentThread.comment.parent_comment_id === null) {
+    if (!commentThread.comment) return;
+
+    if (this.comment === null && commentThread.comment.parent_comment_id === null) {
       this.children.push(commentThread);
     }
 
-    if(this.comment && this.comment.id === commentThread.comment.parent_comment_id){
+    if (this.comment && this.comment.id === commentThread.comment.parent_comment_id) {
       this.children.push(commentThread);
     }
 
-    for(const thread of this.children) {
+    for (const thread of this.children) {
       thread.setChild(commentThread);
     }
   }
 
-  toHTML(userId: number | null = null, showCommentPopup: (replyCommentId: number | null) => unknown, level: number = 0, ) {
-    if(this.comment) {
-      if(this.children.length === 0 ) {
-        return <CommentItem key={`comment-${this.comment.id}`} comment={this.comment} userId={userId} showCommentPopup={showCommentPopup}/>
+  toHTML(userId: number | null = null, showCommentPopup: (replyCommentId: number | null) => unknown, level: number = 0,) {
+    if (this.comment) {
+      if (this.children.length === 0) {
+        return <CommentItem key={`comment-${this.comment.id}`} comment={this.comment} userId={userId} showCommentPopup={showCommentPopup} />
       }
 
-    return (
-      <Fragment key={`comment-${this.comment.id}`}>
-        <CommentItem comment={this.comment} userId={userId} showCommentPopup={showCommentPopup} />
-        <div className="pl-4 border-l-2 border-slate-700 mt-2">
-          {this.children.map(thread => thread.toHTML(userId, showCommentPopup, level + 1))}
-        </div>
-      </Fragment>
-    );
-    } 
+      return (
+        <Fragment key={`comment-${this.comment.id}`}>
+          <CommentItem comment={this.comment} userId={userId} showCommentPopup={showCommentPopup} />
+          <div className="pl-4 border-l-2 border-slate-700 mt-2">
+            {this.children.map(thread => thread.toHTML(userId, showCommentPopup, level + 1))}
+          </div>
+        </Fragment>
+      );
+    }
     return <div>
       {this.children.map(thread => thread.toHTML(userId, showCommentPopup, level + 1))}
     </div>
@@ -68,7 +68,7 @@ class CommentThread {
   getLength() {
     let count = this.children.length;
     for (const thread of this.children) {
-        count += thread.getLength();
+      count += thread.getLength();
     }
     return count;
   }
@@ -76,7 +76,7 @@ class CommentThread {
 
 
 function CommentList() {
-  const { authUser, loading: authLoading, hasPermission} = useAuth();
+  const { authUser, loading: authLoading, hasPermission } = useAuth();
   const [error, setError] = useState<Error | null>(null);
   const [loading, setLoading] = useState(true);
   const { postId } = useParams();
@@ -94,7 +94,7 @@ function CommentList() {
 
   function createCommentThread(comments: Comment[]) {
     const root = new CommentThread(null);
-    for(const comment of comments) {
+    for (const comment of comments) {
       const commentThread = new CommentThread(comment);
       root.setChild(commentThread);
     }
@@ -106,17 +106,17 @@ function CommentList() {
       const bodyComments: Comment[] = body.comments;
       const root = createCommentThread(bodyComments);
       setComments(root);
-      if(commentPopup) setCommentPopup(false);
+      if (commentPopup) setCommentPopup(false);
     }).catch(e => setError(e as Error)).finally(() => setLoading(false));
   }
 
   useEffect(() => {
-    if(authLoading) return;
+    if (authLoading) return;
     getComments();
   }, [authLoading]);
 
   useEffect(() => {
-    if(isNewComment) return;
+    if (isNewComment) return;
     setLoading(true);
     getComments();
     return () => setIsNewComment(false);
@@ -126,23 +126,23 @@ function CommentList() {
     return <ErrorBox message={(error as Error).message} details={null} />
   }
 
-  if(loading) {
+  if (loading) {
     return <div>
       <h1 className="text-gray-100">Loading</h1>
-    </div> 
+    </div>
   }
 
 
   return comments.isEmpty ? <div>
     <div className="flex justify-between">
-      <CommentPopup enabled={commentPopup} setIsNewComment={setIsNewComment} commentId={replyCommentId} postId={Number(postId)} setPopup={setCommentPopup}/>
+      <CommentPopup enabled={commentPopup} setIsNewComment={setIsNewComment} commentId={replyCommentId} postId={Number(postId)} setPopup={setCommentPopup} />
       <h1 className="font-bold text-xl">Comments <span className="text-slate-400">({comments.getLength()})</span></h1>
       {hasPermission("createComment") ? <button className="cursor-pointer rounded-sm text-sm bg-blue-500 p-2 hover:bg-blue-600" onClick={() => showCommentPopup(null)}>New Comment</button> : null}
     </div>
     {comments.toHTML(authUser && authUser.id, showCommentPopup)}
   </div> : <div>
     <h1 className="text-slate-400 font-bold text-2xl">No comments</h1>
-  </div> 
+  </div>
 }
 
 export default CommentList;
