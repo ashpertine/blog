@@ -21,8 +21,7 @@ postRouter.post('/posts/:postId/comments/:commentId', mandatoryUserAuth, comment
 
 postRouter.patch('/comments/:commentId', mandatoryUserAuth, commentValidator, handleValidationErrors, CommentController.modifyComment);
 postRouter.delete('/comments/:commentId', mandatoryUserAuth, CommentController.deleteComemnt);
-postRouter.post('/comments/:commentId/like', mandatoryUserAuth, CommentController.likeComment);
-postRouter.delete('/comments/:commentId/like', mandatoryUserAuth, CommentController.unlikeComment);
+postRouter.post('/comments/:commentId/like', mandatoryUserAuth, CommentController.likeCommentAction);
 
 postRouter.get('/profile/:userId/posts', optionalUserAuth, PostController.getPostsByUser);
 

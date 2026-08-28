@@ -23,9 +23,16 @@ export async function getCommentsByPost(userId: number | null, postId: number) {
         }
       }
     }
-  })
+  });
 
-  return comments
+  const commentsWithUserLiked = comments.map((comment) => {
+    return {
+      ...comment,
+      liked_by_me: userId ? comment.comment_likes.some(obj => obj.user_id === userId)  : false
+    }
+  }).map(({comment_likes, ...comments }) => comments);
+
+  return commentsWithUserLiked;
 }
 
 export async function getComment(commentId: number) {
@@ -97,16 +104,20 @@ export async function modifyComment(userId: number, commentId: number, content: 
   }
 }
 
-export async function likeActionComment(unlike: boolean, userId: number, commentId: number) {
-  if (!unlike) {
-    await prisma.commentLikes.create({
+export async function likeActionComment(userId: number, commentId: number) {
+    const isCommentLiked = (await prisma.commentLikes.findFirst({
+      where: {
+        user_id: userId,
+        comment_id: commentId
+      }
+    })) === null;
+    
+    isCommentLiked ? await prisma.commentLikes.create({ // like comment
       data: {
         user_id: userId,
         comment_id: commentId
       }
-    })
-  } else {
-    await prisma.commentLikes.delete({
+    }) : await prisma.commentLikes.delete({ // unlike comment
       where: {
         user_id_comment_id: {
           user_id: userId,
@@ -114,18 +125,17 @@ export async function likeActionComment(unlike: boolean, userId: number, comment
         }
       }
     });
-  }
 
-  const comment = await prisma.comment.update({
-    data: {
-      likes: !unlike ? { increment: 1 } : { decrement: 1 }
-    },
-    where: {
-      id: commentId
-    }
-  });
-
-  return comment;
+    const comment = await prisma.comment.update({
+      data: {
+        likes: isCommentLiked ? { increment: 1 } : { decrement: 1 }
+      },
+      where: {
+        id: commentId
+      }
+    });
+    
+    return comment;
 }
 
 

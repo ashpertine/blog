@@ -8,11 +8,21 @@ import ErrorBox from "../ErrorBox";
 function CommentItem({ comment, userId, showCommentPopup }: { comment: Comment, userId: number | null, showCommentPopup: (replyCommentId: number | null) => unknown }) {
   const { authUser, hasPermission } = useAuth();
   const [likes, setLikes] = useState<number>(comment.likes);
+  const [isLiked, setIsLiked] = useState<boolean>(comment.liked_by_me);
   const [error, setError] = useState<null | Error>(null);
 
   function likeComment() {
     if (!authUser) return;
-    likeCommentApi(comment.id, authUser.jwt).then(() => setLikes(likes + 1)).catch(error => setError(error as Error));
+    likeCommentApi(comment.id, authUser.jwt).then(() => {
+      if(isLiked) {
+        setIsLiked(false);
+        setLikes(likes - 1);
+        return;
+      }
+
+      setIsLiked(true);
+      setLikes(likes + 1);
+    }).catch(error => setError(error as Error));
   }
 
   const showReply = hasPermission("createComment");
@@ -40,11 +50,12 @@ function CommentItem({ comment, userId, showCommentPopup }: { comment: Comment, 
 
         {/* Actions */}
         <div className="mt-2 flex items-center gap-4">
-          <button className="text-xs font-medium text-slate-400 hover:text-slate-200 cursor-pointer" onClick={() => likeComment()}>
+          {authUser ? <button className={`${isLiked ? "text-fuchsia-500" : "text-slate-400"} text-xs font-medium cursor-pointer`} onClick={() => likeComment()}>
             Like
-          </button>
+          </button>: null}
 
-          <span className="text-sm text-slate-400">
+
+          <span className="text-slate-400 text-sm">
             {likes} {likes === 1 ? "like" : "likes"}
           </span>
 

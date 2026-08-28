@@ -51,9 +51,8 @@ export async function handlePostUpdate(req: Request, res: Response) {
   const userId = req.user!.id;
   const postId = getParamResourceId(req, "postId");
   const { title, content } = req.body as { title: string | undefined, content: string | undefined };
-  if (!title || !content) return errorRes(AppError.badRequest("content and/or title not defined!"), null, res);
 
-  const modifiedPost = await PostService.modifyPost(userId, postId, title, content);
+  const modifiedPost = await PostService.modifyPost(userId, postId, title ?? "", content ?? "");
 
   return okRes(null, `Successfully modified post ${postId}`, { post: modifiedPost }, res);
 }

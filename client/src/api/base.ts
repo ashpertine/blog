@@ -34,13 +34,12 @@ export function fetchWithAuth(method: AppHttpMethod, url: string, data: Record<s
     }
   }).then((response) => {
     return response.json().then(body => {
-      if (!body.success) throw new FetchError(response, body);
-      return body;
-    }).catch(() => {
-      if (response.status >= 400) {
-        throw new FetchError(response, null);
+      if(response.status >= 400 && body.success === false) {
+        throw new FetchError(response, body);
       }
-    })
+
+      return body;
+      }).catch(() =>{ throw new FetchError(response, null) });
   })
 }
 

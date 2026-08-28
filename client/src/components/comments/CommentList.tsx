@@ -16,7 +16,8 @@ export type Comment = {
   created_date: string,
   comment_user: {
     username: string
-  }
+  },
+  liked_by_me: boolean
 }
 
 class CommentThread {
