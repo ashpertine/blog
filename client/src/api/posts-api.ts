@@ -45,7 +45,6 @@ export function likeCommentApi(commentId: number, userJwt: string) {
   return fetchWithAuth("POST", `/api/comments/${commentId}/like`, null, userJwt);
 }
 
-export function unlikeCommentApi(commentId: number, userJwt: string) {
-  return fetchWithAuth("DELETE", `/api/comments/${commentId}/like`, null, userJwt);
+export function deleteCommentApi(commentId: number, userJwt: string) {
+  return fetchWithAuth("DELETE", `/api/comments/${commentId}`, null, userJwt);
 }
-

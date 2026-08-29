@@ -1,5 +1,5 @@
 import { useState, useEffect, Fragment } from "react";
-import { getPostCommentsApi } from "../../api/posts-api";
+import { getPostCommentsApi, deleteCommentApi } from "../../api/posts-api";
 import { useParams } from "react-router";
 import ErrorBox from "../ErrorBox";
 import { useAuth } from "../../contexts/AuthContext";
@@ -47,23 +47,23 @@ class CommentThread {
     })
   }
 
-  toHTML(userId: number | null = null, showCommentPopup: (replyCommentId: number | null) => unknown, level: number = 0,) {
+  toHTML(userId: number | null = null, showCommentPopup: (replyCommentId: number | null) => unknown, deleteComment: (commentId: number) => unknown, level: number = 0,) {
     if (this.comment) {
       if (this.children.length === 0) {
-        return <CommentItem key={`comment-${this.comment.id}`} comment={this.comment} userId={userId} showCommentPopup={showCommentPopup} />
+        return <CommentItem key={`comment-${this.comment.id}`} comment={this.comment} userId={userId} deleteComment={deleteComment} showCommentPopup={showCommentPopup} />
       }
 
       return (
         <Fragment key={`comment-${this.comment.id}`}>
-          <CommentItem comment={this.comment} userId={userId} showCommentPopup={showCommentPopup} />
+          <CommentItem comment={this.comment} userId={userId} deleteComment={deleteComment} showCommentPopup={showCommentPopup} />
           <div className="pl-4 border-l-2 border-slate-700 mt-2">
-            {this.children.map(thread => thread.toHTML(userId, showCommentPopup, level + 1))}
+            {this.children.map(thread => thread.toHTML(userId, showCommentPopup, deleteComment, level + 1))}
           </div>
         </Fragment>
       );
     }
     return <div>
-      {this.children.map(thread => thread.toHTML(userId, showCommentPopup, level + 1))}
+      {this.children.map(thread => thread.toHTML(userId, showCommentPopup, deleteComment, level + 1))}
     </div>
   }
 
@@ -109,6 +109,15 @@ function CommentList() {
     }).catch(e => setError(e as Error)).finally(() => setLoading(false));
   }
 
+  function deleteComment(commentId: number) {
+    if (!authUser) return;
+
+    setLoading(true);
+    deleteCommentApi(commentId, authUser.jwt).then(() => {
+      getComments();
+    }).catch(error => setError(error as Error)).finally(() => setLoading(false));
+  }
+
   useEffect(() => {
     if (!postId) setError(new Error("Post ID is not defined!"));
   }, []);
@@ -142,7 +151,7 @@ function CommentList() {
       <h1 className="font-bold text-xl">Comments <span className="text-slate-400">({comments.getLength()})</span></h1>
       {hasPermission("createComment") ? <button className="cursor-pointer rounded-sm text-sm bg-blue-500 p-2 hover:bg-blue-600" onClick={() => showCommentPopup(null)}>New Comment</button> : null}
     </div>
-    {comments.toHTML(authUser && authUser.id, showCommentPopup)}
+    {comments.toHTML(authUser && authUser.id, showCommentPopup, deleteComment)}
   </div> : <div>
     <h1 className="text-slate-400 font-bold text-2xl">No comments</h1>
   </div>
